@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
@@ -33,7 +33,7 @@ function App() {
     <ErrorBoundary>
       <AuthProvider>
         <ThemeProvider>
-          <BrowserRouter>
+          <HashRouter>
             <Toaster position="top-center" toastOptions={{ duration: 4000, style: { background: '#363636', color: '#fff' }}} />
             <Routes>
               <Route path="/login" element={<LoginPage />} />
@@ -61,7 +61,7 @@ function App() {
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Route>
             </Routes>
-          </BrowserRouter>
+          </HashRouter>
         </ThemeProvider>
       </AuthProvider>
     </ErrorBoundary>
