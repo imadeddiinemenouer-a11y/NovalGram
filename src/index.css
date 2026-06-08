@@ -1,0 +1,203 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply antialiased text-gray-900 bg-gray-50;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans Arabic', 'Noto Sans SC', 'Noto Sans JP', 'Noto Sans KR', sans-serif;
+  }
+
+  /* RTL Support */
+  [dir="rtl"] {
+    text-align: right;
+  }
+
+  [dir="rtl"] .rtl-flip {
+    transform: scaleX(-1);
+  }
+
+  [dir="rtl"] .rtl-space-x-reverse > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-x-reverse: 1;
+  }
+
+  [dir="rtl"] .rtl-mr-auto {
+    margin-right: auto;
+    margin-left: 0;
+  }
+
+  [dir="rtl"] .rtl-ml-auto {
+    margin-left: auto;
+    margin-right: 0;
+  }
+
+  [dir="rtl"] .rtl-text-right {
+    text-align: right;
+  }
+
+  [dir="rtl"] .rtl-text-left {
+    text-align: left;
+  }
+
+  [dir="rtl"] .rtl-border-r {
+    border-right-width: 1px;
+    border-left-width: 0;
+  }
+
+  [dir="rtl"] .rtl-border-l {
+    border-left-width: 1px;
+    border-right-width: 0;
+  }
+
+  [dir="rtl"] .rtl-rounded-r {
+    border-top-right-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+
+  [dir="rtl"] .rtl-rounded-l {
+    border-top-left-radius: 0.5rem;
+    border-bottom-left-radius: 0.5rem;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  [dir="rtl"] .rtl-inset-r {
+    right: 0;
+    left: auto;
+  }
+
+  [dir="rtl"] .rtl-inset-l {
+    left: 0;
+    right: auto;
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+
+  .animate-pulse-slow {
+    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { 
+    transform: translateY(10px); 
+    opacity: 0; 
+  }
+  to { 
+    transform: translateY(0); 
+    opacity: 1; 
+  }
+}
+
+/* Custom scrollbar for content areas */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* Font loading for different languages */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+}
+
+/* Noto Sans for Arabic */
+.ar-font {
+  font-family: 'Noto Sans Arabic', 'Inter', sans-serif;
+}
+
+/* Noto Sans for Chinese */
+.zh-font {
+  font-family: 'Noto Sans SC', 'Inter', sans-serif;
+}
+
+/* Noto Sans for Japanese */
+.ja-font {
+  font-family: 'Noto Sans JP', 'Inter', sans-serif;
+}
+
+/* Noto Sans for Korean */
+.ko-font {
+  font-family: 'Noto Sans KR', 'Inter', sans-serif;
+}
+
+/* Noto Sans for Bengali */
+.bn-font {
+  font-family: 'Noto Sans Bengali', 'Inter', sans-serif;
+}
+
+/* Noto Sans for Tamil */
+.ta-font {
+  font-family: 'Noto Sans Tamil', 'Inter', sans-serif;
+}
+
+/* Noto Sans for Thai */
+.th-font {
+  font-family: 'Noto Sans Thai', 'Inter', sans-serif;
+}
+
+/* Noto Sans for Devanagari (Hindi) */
+.hi-font {
+  font-family: 'Noto Sans Devanagari', 'Inter', sans-serif;
+}
