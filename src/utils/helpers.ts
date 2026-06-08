@@ -72,3 +72,11 @@ export const LIBRARY_STATUS = {
   dropped: { label: 'Dropped', icon: 'XCircle', color: 'text-red-600' },
   planned: { label: 'Planned', icon: 'Clock', color: 'text-purple-600' }
 } as const;
+export function calculateReadingTime(wordCount: number): string {
+  const wordsPerMinute = 200;
+  const minutes = Math.ceil(wordCount / wordsPerMinute);
+  if (minutes < 60) return `${minutes} min read`;
+  const hours = Math.floor(minutes / 60);
+  const remaining = minutes % 60;
+  return `${hours}h ${remaining}m read`;
+}
