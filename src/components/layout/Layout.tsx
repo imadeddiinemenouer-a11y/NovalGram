@@ -27,17 +27,8 @@ export default function Layout() {
 
   return (
     <div className="min-h-screen bg-[var(--color-bg-primary)] transition-colors relative">
+      {/* ✅ نمرر openSidebar إلى TopBar */}
       <TopBar onMenuToggle={openSidebar} />
-
-      {/* 🔴 زر اختبار تشخيصي كبير جداً */}
-      <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-30">
-        <button 
-          onClick={openSidebar}
-          className="bg-red-600 text-white px-8 py-4 rounded-full font-bold text-xl shadow-2xl animate-pulse hover:bg-red-700"
-        >
-          انقر هنا لفتح القائمة (اختبار)
-        </button>
-      </div>
 
       {/* القائمة الجانبية */}
       {sidebarOpen && (
@@ -48,7 +39,7 @@ export default function Layout() {
           />
           <div className="fixed top-0 left-0 h-full w-72 max-w-[85vw] bg-white dark:bg-gray-900 shadow-2xl z-50 overflow-y-auto">
             <div className="p-5 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">قائمة التصفح</h2>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">Menu</h2>
               <button onClick={closeSidebar} className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full">
                 <X className="w-5 h-5 text-gray-500" />
               </button>
