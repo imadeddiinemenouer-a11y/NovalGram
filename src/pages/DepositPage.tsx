@@ -203,7 +203,8 @@ export default function DepositPage() {
                 </div>
                 <div className="bg-gray-50 rounded-lg p-3">
                   <p className="text-gray-500">Min Deposit</p>
-                  <p className="font-medium">1 USDT</p>
+                  {/* تم التعديل هنا */}
+                  <p className="font-medium">0.1 USDT</p>
                 </div>
                 <div className="bg-gray-50 rounded-lg p-3">
                   <p className="text-gray-500">Rate</p>
