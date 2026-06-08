@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Play, Clock, Gift, TrendingUp, AlertCircle, CheckCircle, Star, Zap, Shield } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { processAdReward, getUserBalance, getDailyAdStats, supabase } from '../utils/bsc_payment';
+import { processAdReward, getUserBalance, getDailyAdStats, supabase } from '../utils/api';
 import { formatNumber } from '../utils/helpers';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import toast from 'react-hot-toast';
