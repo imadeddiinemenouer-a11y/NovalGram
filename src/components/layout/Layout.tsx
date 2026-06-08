@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { X, Wallet, ShoppingBag, PenTool, Search, Gift, ArrowUpRight, Bookmark, Globe, User, Settings } from 'lucide-react';
+import { X, Wallet, ShoppingBag, PenTool, Search, Gift, Bookmark, Globe, User, Settings } from 'lucide-react';
 import TopBar from './TopBar';
 import BottomNav from './BottomNav';
 import { useAuth } from '../../context/AuthContext';
@@ -14,12 +14,12 @@ export default function Layout() {
   const closeSidebar = () => setSidebarOpen(false);
   const openSidebar = () => setSidebarOpen(true);
 
+  // تم إزالة عنصر "Withdraw" لأنه أصبح ضمن صفحة Wallet الموحدة
   const menuItems = [
     { path: '/search', label: 'Search', icon: Search },
     { path: '/wallet', label: 'Wallet', icon: Wallet },
     { path: '/store', label: 'Feature Store', icon: ShoppingBag },
     { path: '/rewards', label: 'Earn NGC', icon: Gift },
-    { path: '/withdraw', label: 'Withdraw', icon: ArrowUpRight },
     { path: '/bookmarks', label: 'Bookmarks', icon: Bookmark },
     { path: '/studio', label: 'Studio', icon: PenTool },
     { path: '/language/en', label: 'Languages', icon: Globe },
@@ -27,10 +27,8 @@ export default function Layout() {
 
   return (
     <div className="min-h-screen bg-[var(--color-bg-primary)] transition-colors relative">
-      {/* ✅ نمرر openSidebar إلى TopBar */}
       <TopBar onMenuToggle={openSidebar} />
 
-      {/* القائمة الجانبية */}
       {sidebarOpen && (
         <>
           <div
