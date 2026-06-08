@@ -13,11 +13,31 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// مفتاح تخزين المستخدم محلياً
+const USER_STORAGE_KEY = 'novelgram_user';
+
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<Profile | null>(null);
+  const [user, setUser] = useState<Profile | null>(() => {
+    // استعادة المستخدم من localStorage عند تحميل الصفحة
+    try {
+      const saved = localStorage.getItem(USER_STORAGE_KEY);
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
   const [isLoading, setIsLoading] = useState(true);
 
-  // محاولة تحميل المستخدم عند فتح الموقع
+  // مزامنة localStorage مع حالة المستخدم
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+    } else {
+      localStorage.removeItem(USER_STORAGE_KEY);
+    }
+  }, [user]);
+
+  // محاولة جلب المستخدم الحقيقي من Supabase عند التحميل
   useEffect(() => {
     checkUser();
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
@@ -32,7 +52,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  // دالة مساعدة لبناء كائن مستخدم محلي في حال عدم وجود بروفايل
   function buildLocalUser(id: string, email?: string): Profile {
     return {
       id,
@@ -49,7 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function checkUser() {
     try {
       const profile = await getCurrentUser();
-      setUser(profile);
+      if (profile) setUser(profile);
     } catch (error) {
       console.error('Error checking user:', error);
     } finally {
@@ -66,7 +85,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (authError) throw authError;
 
     if (authData.user) {
-      // محاولة إدراج البروفايل
       const { error: profileError } = await supabase
         .from('profiles')
         .insert({
@@ -79,7 +97,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.warn('Could not insert profile, using local user');
       }
 
-      // بناء كائن مستخدم مباشرة وتسجيل الدخول
       const localUser = buildLocalUser(authData.user.id, authData.user.email);
       setUser(localUser);
     }
@@ -94,7 +111,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) throw error;
 
     if (data.user) {
-      // محاولة جلب البروفايل الحقيقي، وإلا استخدم المحلي
       const profile = await getCurrentUser();
       setUser(profile || buildLocalUser(data.user.id, data.user.email));
     }
