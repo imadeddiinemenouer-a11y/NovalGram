@@ -21,6 +21,8 @@ import FeatureStorePage from './pages/FeatureStorePage';
 import WithdrawalPage from './pages/WithdrawalPage';
 import AdRewardsPage from './pages/AdRewardsPage';
 import LanguageNovelsPage from './pages/LanguageNovelsPage';
+import NotificationsPage from './pages/NotificationsPage';
+import NewNovelPage from './pages/NewNovelPage';
 
 function App() {
   return (
@@ -44,8 +46,10 @@ function App() {
                 <Route index element={<DiscoverPage />} />
                 <Route path="library" element={<LibraryPage />} />
                 <Route path="bookmarks" element={<BookmarksPage />} />
-                <Route path="studio/*" element={<StudioPage />} />
+                <Route path="studio" element={<StudioPage />} />
+                <Route path="studio/new" element={<NewNovelPage />} />
                 <Route path="profile" element={<ProfilePage />} />
+                <Route path="notifications" element={<NotificationsPage />} />
                 <Route path="novel/:id" element={<NovelPage />} />
                 <Route path="chapter/:chapterId" element={<ChapterPage />} />
                 <Route path="search" element={<SearchPage />} />
