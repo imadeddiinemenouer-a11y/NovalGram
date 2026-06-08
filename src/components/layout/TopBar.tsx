@@ -52,7 +52,11 @@ export default function TopBar() {
               >
                 <Search className="w-5 h-5 text-gray-600 dark:text-gray-300" />
               </button>
-              <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors relative">
+              {/* ✅ زر الإشعارات يعمل الآن */}
+              <button 
+                onClick={() => navigate('/notifications')}
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors relative"
+              >
                 <Bell className="w-5 h-5 text-gray-600 dark:text-gray-300" />
                 <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
               </button>
