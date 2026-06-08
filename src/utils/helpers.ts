@@ -35,6 +35,25 @@ export function calculateReadingTime(wordCount: number): string {
   return `${hours}h ${remaining}m read`;
 }
 
+export const GENRES = [
+  'Fantasy',
+  'Romance',
+  'Sci-Fi',
+  'Mystery',
+  'Horror',
+  'Adventure',
+  'Comedy',
+  'Drama',
+  'Action',
+  'Thriller',
+  'Slice of Life',
+  'Historical',
+  'Supernatural',
+  'Psychological',
+  'Mecha',
+  'Isekai',
+];
+
 export const STATUS_COLORS = {
   ongoing: 'bg-green-100 text-green-700',
   completed: 'bg-blue-100 text-blue-700',
