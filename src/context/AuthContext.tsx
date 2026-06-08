@@ -62,6 +62,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
 
       if (profileError) throw profileError;
+
+      // ✅ هذا هو التعديل الأساسي: تحديث حالة المستخدم بعد التسجيل
+      await checkUser();
     }
   }
 
