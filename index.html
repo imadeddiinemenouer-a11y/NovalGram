@@ -12,6 +12,16 @@
     <!-- إضافة Tailwind CSS من CDN لحل مشكلة التصميم -->
     <script src="https://cdn.tailwindcss.com"></script>
     <title>Novelgram - Stories that ping you back</title>
+    <!-- حل مشكلة 404 عند تحديث الصفحة -->
+    <script>
+      (function() {
+        var params = new URLSearchParams(window.location.search);
+        var redirect = params.get('redirect');
+        if (redirect) {
+          window.history.replaceState(null, '', redirect);
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
