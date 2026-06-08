@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Heart, Send, MessageCircle, Coins, AlertCircle } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import { directSupportAuthor, getUserBalance } from '../utils/bsc_payment';
-import { formatNumber } from '../utils/helpers';
+import { useAuth } from '../../context/AuthContext';
+import { directSupportAuthor, getUserBalance } from '../../utils/bsc_payment';
+import { formatNumber } from '../../utils/helpers';
 import toast from 'react-hot-toast';
 
 interface DirectSupportProps {
