@@ -270,3 +270,33 @@ export async function processAdReward(userId: string, durationSeconds: number) {
 export async function getDailyAdStats(userId: string) {
   return { ads_watched: 0, max_ads: 20, ngc_earned: 0, max_ngc: 100 };
 }
+// دوال رفع الملفات (تستخدم Supabase Storage الحقيقي)
+import { createClient } from '@supabase/supabase-js';
+
+// عميل Supabase حقيقي للـ Storage
+const storageClient = createClient(
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_ANON_KEY
+);
+
+export async function uploadAvatar(userId: string, file: File): Promise<string | null> {
+  const fileExt = file.name.split('.').pop();
+  const fileName = `${userId}.${fileExt}`;
+  const { data, error } = await storageClient.storage
+    .from('avatars')
+    .upload(fileName, file, { upsert: true });
+
+  if (error) throw error;
+  return storageClient.storage.from('avatars').getPublicUrl(fileName).data.publicUrl;
+}
+
+export async function uploadCover(novelId: string, file: File): Promise<string | null> {
+  const fileExt = file.name.split('.').pop();
+  const fileName = `${novelId}.${fileExt}`;
+  const { data, error } = await storageClient.storage
+    .from('covers')
+    .upload(fileName, file, { upsert: true });
+
+  if (error) throw error;
+  return storageClient.storage.from('covers').getPublicUrl(fileName).data.publicUrl;
+}
