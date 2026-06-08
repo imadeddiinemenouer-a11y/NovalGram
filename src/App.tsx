@@ -15,9 +15,8 @@ import NovelPage from './pages/NovelPage';
 import ChapterPage from './pages/ChapterPage';
 import SearchPage from './pages/SearchPage';
 import LoginPage from './pages/LoginPage';
-import DepositPage from './pages/DepositPage';
+import WalletPage from './pages/WalletPage';
 import FeatureStorePage from './pages/FeatureStorePage';
-import WithdrawalPage from './pages/WithdrawalPage';
 import AdRewardsPage from './pages/AdRewardsPage';
 import LanguageNovelsPage from './pages/LanguageNovelsPage';
 import NotificationsPage from './pages/NotificationsPage';
@@ -49,9 +48,8 @@ function App() {
                 <Route path="chapter/:chapterId" element={<ChapterPage />} />
                 <Route path="author/:authorId" element={<AuthorPage />} />
                 <Route path="search" element={<SearchPage />} />
-                <Route path="wallet" element={<DepositPage />} />
+                <Route path="wallet" element={<WalletPage />} />
                 <Route path="store" element={<FeatureStorePage />} />
-                <Route path="withdraw" element={<WithdrawalPage />} />
                 <Route path="rewards" element={<AdRewardsPage />} />
                 <Route path="language/:langCode" element={<LanguageNovelsPage />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
