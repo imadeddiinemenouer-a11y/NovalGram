@@ -4,6 +4,8 @@ import { User, Settings, BookOpen, Heart, MessageCircle, LogOut, Edit, Camera, S
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { formatDate } from '../utils/helpers';
+import { uploadAvatar } from '../utils/api';
+import toast from 'react-hot-toast';
 
 export default function ProfilePage() {
   const navigate = useNavigate();
@@ -56,12 +58,33 @@ export default function ProfilePage() {
         <div className="max-w-4xl mx-auto px-4 py-10 relative z-10">
           <div className="flex flex-col sm:flex-row items-center gap-6">
             <div className="relative">
-              <div className={`w-28 h-28 rounded-full border-4 ${isDark ? 'border-gray-700 bg-gray-800 text-gray-300' : 'border-white/30 bg-white/20 text-white'} flex items-center justify-center text-4xl font-bold shadow-lg`}>
-                {avatarLetter}
-              </div>
-              <button className="absolute -bottom-1 -right-1 w-9 h-9 bg-gray-900 dark:bg-gray-100 dark:text-gray-900 text-white rounded-full flex items-center justify-center shadow hover:scale-105 transition-transform">
+              {user.avatar_url ? (
+                <img src={user.avatar_url} alt="Avatar" className="w-28 h-28 rounded-full object-cover border-4 border-white/30 shadow-lg" />
+              ) : (
+                <div className={`w-28 h-28 rounded-full border-4 ${isDark ? 'border-gray-700 bg-gray-800 text-gray-300' : 'border-white/30 bg-white/20 text-white'} flex items-center justify-center text-4xl font-bold shadow-lg`}>
+                  {avatarLetter}
+                </div>
+              )}
+              <label className="absolute -bottom-1 -right-1 w-9 h-9 bg-gray-900 dark:bg-gray-100 dark:text-gray-900 text-white rounded-full flex items-center justify-center shadow hover:scale-105 transition-transform cursor-pointer">
                 <Camera className="w-4 h-4" />
-              </button>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (file && user) {
+                      try {
+                        const url = await uploadAvatar(user.id, file);
+                        if (url) updateUser({ avatar_url: url });
+                        toast.success('Avatar updated!');
+                      } catch (err) {
+                        toast.error('Failed to upload avatar');
+                      }
+                    }
+                  }}
+                />
+              </label>
             </div>
             <div className="text-center sm:text-left">
               <h1 className="text-2xl font-bold">{user.display_name || user.username || 'User'}</h1>
