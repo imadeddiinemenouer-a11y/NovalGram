@@ -2,14 +2,47 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ===== متغيرات الألوان: الوضع النهاري (افتراضي) ===== */
+:root {
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f5f3ff; /* بنفسجي فاتح جداً */
+  --color-bg-card: #ffffff;
+  --color-text-primary: #1e1b4b; /* بنفسجي غامق */
+  --color-text-secondary: #6b7280;
+  --color-accent: #7c3aed; /* بنفسجي */
+  --color-accent-hover: #6d28d9;
+  --color-border: #e5e7eb;
+  --color-danger: #ef4444;
+  --color-gold: #d4af37;
+  --color-gold-light: #f6e27a;
+}
+
+/* ===== متغيرات الألوان: الوضع الليلي ===== */
+.dark {
+  --color-bg-primary: #0a0a0a;
+  --color-bg-secondary: #111111;
+  --color-bg-card: #1a1a1a;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #a3a3a3;
+  --color-accent: #c53030; /* أحمر */
+  --color-accent-hover: #9b2c2c;
+  --color-border: #2d2d2d;
+  --color-danger: #f87171;
+  --color-gold: #d4af37;
+  --color-gold-light: #f6e27a;
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
   }
 
   body {
-    @apply antialiased text-gray-900 bg-gray-50;
+    @apply antialiased;
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans Arabic', 'Noto Sans SC', 'Noto Sans JP', 'Noto Sans KR', sans-serif;
+    transition: background-color 0.3s, color 0.3s;
   }
 
   /* RTL Support */
@@ -162,42 +195,11 @@
   src: url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
 }
 
-/* Noto Sans for Arabic */
-.ar-font {
-  font-family: 'Noto Sans Arabic', 'Inter', sans-serif;
-}
-
-/* Noto Sans for Chinese */
-.zh-font {
-  font-family: 'Noto Sans SC', 'Inter', sans-serif;
-}
-
-/* Noto Sans for Japanese */
-.ja-font {
-  font-family: 'Noto Sans JP', 'Inter', sans-serif;
-}
-
-/* Noto Sans for Korean */
-.ko-font {
-  font-family: 'Noto Sans KR', 'Inter', sans-serif;
-}
-
-/* Noto Sans for Bengali */
-.bn-font {
-  font-family: 'Noto Sans Bengali', 'Inter', sans-serif;
-}
-
-/* Noto Sans for Tamil */
-.ta-font {
-  font-family: 'Noto Sans Tamil', 'Inter', sans-serif;
-}
-
-/* Noto Sans for Thai */
-.th-font {
-  font-family: 'Noto Sans Thai', 'Inter', sans-serif;
-}
-
-/* Noto Sans for Devanagari (Hindi) */
-.hi-font {
-  font-family: 'Noto Sans Devanagari', 'Inter', sans-serif;
-}
+.ar-font { font-family: 'Noto Sans Arabic', 'Inter', sans-serif; }
+.zh-font { font-family: 'Noto Sans SC', 'Inter', sans-serif; }
+.ja-font { font-family: 'Noto Sans JP', 'Inter', sans-serif; }
+.ko-font { font-family: 'Noto Sans KR', 'Inter', sans-serif; }
+.bn-font { font-family: 'Noto Sans Bengali', 'Inter', sans-serif; }
+.ta-font { font-family: 'Noto Sans Tamil', 'Inter', sans-serif; }
+.th-font { font-family: 'Noto Sans Thai', 'Inter', sans-serif; }
+.hi-font { font-family: 'Noto Sans Devanagari', 'Inter', sans-serif; }
