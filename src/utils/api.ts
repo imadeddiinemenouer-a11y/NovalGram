@@ -1,6 +1,15 @@
+import { createClient } from '@supabase/supabase-js';
+
 // ============================================================
-// محاكي Supabase شامل – يدعم جميع التسلسلات ويعيد نتائج فارغة
+// عميل Supabase الحقيقي للمصادقة
 // ============================================================
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+// إنشاء عميل حقيقي للمصادقة
+const realSupabase = createClient(supabaseUrl, supabaseAnonKey);
+
+// محاكي للبيانات (يُعيد نتائج فارغة لبقية الجداول)
 function createMockQuery() {
   const handler: any = {
     get(target: any, prop: string) {
@@ -17,37 +26,50 @@ function createMockQuery() {
   return proxy;
 }
 
+// تصدير كائن supabase مدمج:
+// - المصادقة من العميل الحقيقي
+// - بقية الدوال (from, rpc) من المحاكي
 export const supabase: any = {
   from: () => createMockQuery(),
   rpc: () => createMockQuery(),
-  auth: {
-    signUp: async () => ({ data: { user: { id: 'mock' } }, error: null }),
-    signInWithPassword: async () => ({ data: { user: { id: 'mock' } }, error: null }),
-    signOut: async () => ({ error: null }),
-    getUser: async () => ({ data: { user: null } }),
-    onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
-  },
+  auth: realSupabase.auth, // 👈 هذا الجزء يستخدم Supabase الحقيقي
 };
 
 // ============================================================
-// الدوال الكاملة – تستخدم supabase (المحاكي حالياً)
+// الدوال المُصدّرة (تستخدم الكائن أعلاه)
 // ============================================================
 
 // Auth helpers
 export async function signUp(email: string, password: string, username: string) {
-  const { data: authData, error: authError } = await supabase.auth.signUp({ email, password });
+  // استخدام المصادقة الحقيقية
+  const { data: authData, error: authError } = await supabase.auth.signUp({
+    email,
+    password,
+  });
+
   if (authError) throw authError;
+
   if (authData.user) {
-    const { error: profileError } = await supabase.from('profiles').insert({
-      id: authData.user.id, username, role: 'reader'
-    });
-    if (profileError) throw profileError;
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .insert({
+        id: authData.user.id,
+        username,
+        role: 'reader'
+      });
+
+    if (profileError) console.warn('Profile insert warning (mock):', profileError);
   }
+
   return authData;
 }
 
 export async function signIn(email: string, password: string) {
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
   if (error) throw error;
   return data;
 }
@@ -60,17 +82,18 @@ export async function signOut() {
 export async function getCurrentUser() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
-  const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single();
+
   return profile;
 }
 
-// Novels
-export async function getNovels(filters?: {
-  genre?: string;
-  status?: string;
-  search?: string;
-  sort?: 'trending' | 'new' | 'popular' | 'rating';
-}) {
+// Novels (محاكي)
+export async function getNovels(filters?: any) {
   let query = supabase.from('novels').select('*, author:profiles(*), chapters:chapters(count)').eq('is_published', true);
   if (filters?.genre && filters.genre !== 'all') query = query.contains('genre', [filters.genre]);
   if (filters?.status && filters.status !== 'all') query = query.eq('status', filters.status);
@@ -105,7 +128,7 @@ export async function updateNovel(id: string, updates: any) {
   return data;
 }
 
-// Chapters
+// Chapters (محاكي)
 export async function getChapters(novelId: string) {
   const { data, error } = await supabase.from('chapters').select('*').eq('novel_id', novelId).eq('is_published', true).order('chapter_number', { ascending: true });
   if (error) throw error;
@@ -125,7 +148,7 @@ export async function createChapter(chapter: any) {
   return data;
 }
 
-// Library
+// Library (محاكي)
 export async function getLibrary(userId: string) {
   const { data, error } = await supabase.from('library').select('*, novel:novels(*)').eq('user_id', userId);
   if (error) throw error;
@@ -151,7 +174,7 @@ export async function removeFromLibrary(libraryId: string) {
   if (error) throw error;
 }
 
-// Comments
+// Comments (محاكي)
 export async function getComments(chapterId: string) {
   const { data, error } = await supabase.from('comments').select('*, user:profiles(*)').eq('chapter_id', chapterId).order('created_at', { ascending: false });
   if (error) throw error;
@@ -164,7 +187,7 @@ export async function addComment(comment: any) {
   return data;
 }
 
-// Ratings
+// Ratings (محاكي)
 export async function getRatings(novelId: string) {
   const { data, error } = await supabase.from('ratings').select('*, user:profiles(*)').eq('novel_id', novelId).order('created_at', { ascending: false });
   if (error) throw error;
@@ -177,7 +200,7 @@ export async function rateNovel(userId: string, novelId: string, rating: number,
   return data;
 }
 
-// Follows
+// Follows (محاكي)
 export async function followNovel(userId: string, novelId: string) {
   const { data, error } = await supabase.from('follows').insert({ follower_id: userId, novel_id: novelId }).select().single();
   if (error) throw error;
@@ -195,7 +218,7 @@ export async function isFollowingNovel(userId: string, novelId: string) {
   return !!data;
 }
 
-// Notifications
+// Notifications (محاكي)
 export async function getNotifications(userId: string) {
   const { data, error } = await supabase.from('notifications').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(50);
   if (error) throw error;
@@ -207,17 +230,15 @@ export async function markNotificationAsRead(notificationId: string) {
   if (error) throw error;
 }
 
-// Stats
+// Stats (محاكي)
 export async function getNovelStats(novelId: string, days: number = 30) {
   const { data, error } = await supabase.from('novel_stats').select('*').eq('novel_id', novelId).gte('date', new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString()).order('date', { ascending: true });
   if (error) throw error;
   return data;
 }
 
-// دوال إضافية تحتاجها صفحات أخرى
-
+// دوال إضافية (محاكي)
 export async function processDeposit(userId: string, txHashOrAmount: string | number) {
-  // المحاكي يقبل أي قيمة ويعيد نجاح
   return { success: true, message: 'Deposit processed' };
 }
 
