@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Menu, X, Sun, Moon } from 'lucide-react';
+import { Search, Bell, Menu, X, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 
@@ -64,6 +64,14 @@ export default function TopBar({ onMenuToggle }: TopBarProps) {
                 className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
               >
                 <Search className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+              </button>
+              {/* ✅ زر الإشعارات عاد إلى الأعلى */}
+              <button
+                onClick={() => navigate('/notifications')}
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors relative"
+              >
+                <Bell className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
               </button>
               <button
                 onClick={toggleTheme}
