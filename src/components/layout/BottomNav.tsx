@@ -1,14 +1,12 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Compass, Library, Bookmark, Bell, User, PenTool } from 'lucide-react';
+import { Compass, Library, Bookmark, PenTool, User } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { useTheme } from '../../context/ThemeContext';
 
 export default function BottomNav() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
-  const { theme } = useTheme();
 
   const isActive = (path: string) => {
     if (path === '/') return location.pathname === '/';
@@ -45,7 +43,7 @@ export default function BottomNav() {
           <span className="text-[10px] font-semibold">Library</span>
         </button>
 
-        {/* زر مركزي: للكاتب (استوديو) أو للقارئ (إشارات) */}
+        {/* زر مركزي: Write (للكاتب) أو Bookmarks (للقارئ) */}
         <button
           onClick={() => {
             if (user?.role === 'author') {
@@ -65,17 +63,17 @@ export default function BottomNav() {
           )}
         </button>
 
-        {/* Notifications */}
+        {/* Write / Studio (بدلاً من Alerts) */}
         <button
-          onClick={() => navigate('/notifications')}
+          onClick={() => navigate('/studio')}
           className={`flex flex-col items-center gap-1 px-4 py-1 rounded-xl transition-all ${
-            isActive('/notifications')
+            isActive('/studio')
               ? 'text-indigo-600 dark:text-red-400'
               : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
           }`}
         >
-          <Bell className="w-6 h-6" />
-          <span className="text-[10px] font-semibold">Alerts</span>
+          <PenTool className="w-6 h-6" />
+          <span className="text-[10px] font-semibold">Write</span>
         </button>
 
         {/* Profile */}
@@ -84,7 +82,7 @@ export default function BottomNav() {
           className={`flex flex-col items-center gap-1 px-4 py-1 rounded-xl transition-all ${
             isActive('/profile')
               ? 'text-indigo-600 dark:text-red-400'
-               : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
+              : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
           }`}
         >
           <User className="w-6 h-6" />
