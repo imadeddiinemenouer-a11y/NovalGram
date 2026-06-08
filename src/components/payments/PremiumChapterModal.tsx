@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Lock, Coins, AlertCircle, CheckCircle, Zap } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import { purchasePremiumChapter, getUserBalance } from '../utils/bsc_payment';
-import { formatNumber } from '../utils/helpers';
+import { useAuth } from '../../context/AuthContext';
+import { purchasePremiumChapter, getUserBalance } from '../../utils/bsc_payment';
+import { formatNumber } from '../../utils/helpers';
 import toast from 'react-hot-toast';
 
 interface PremiumChapterModalProps {
