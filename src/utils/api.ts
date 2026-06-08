@@ -1,6 +1,6 @@
-import { createClient } from '@supabase/supabase-js';
-
-// محاكي Supabase مرن
+// ============================================================
+// محاكي Supabase شامل – يدعم جميع التسلسلات ويعيد نتائج فارغة
+// ============================================================
 function createMockQuery() {
   const handler: any = {
     get(target: any, prop: string) {
@@ -29,10 +29,11 @@ export const supabase: any = {
   },
 };
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+// ============================================================
+// الدوال الكاملة – تستخدم supabase (المحاكي حالياً)
+// ============================================================
 
-// Auth
+// Auth helpers
 export async function signUp(email: string, password: string, username: string) {
   const { data: authData, error: authError } = await supabase.auth.signUp({ email, password });
   if (authError) throw authError;
@@ -64,7 +65,12 @@ export async function getCurrentUser() {
 }
 
 // Novels
-export async function getNovels(filters?: any) {
+export async function getNovels(filters?: {
+  genre?: string;
+  status?: string;
+  search?: string;
+  sort?: 'trending' | 'new' | 'popular' | 'rating';
+}) {
   let query = supabase.from('novels').select('*, author:profiles(*), chapters:chapters(count)').eq('is_published', true);
   if (filters?.genre && filters.genre !== 'all') query = query.contains('genre', [filters.genre]);
   if (filters?.status && filters.status !== 'all') query = query.eq('status', filters.status);
@@ -208,8 +214,10 @@ export async function getNovelStats(novelId: string, days: number = 30) {
   return data;
 }
 
-// Extra functions
-export async function processDeposit(userId: string, txHash: string) {
+// دوال إضافية تحتاجها صفحات أخرى
+
+export async function processDeposit(userId: string, txHashOrAmount: string | number) {
+  // المحاكي يقبل أي قيمة ويعيد نجاح
   return { success: true, message: 'Deposit processed' };
 }
 
@@ -218,7 +226,7 @@ export async function getUserBalance(userId: string) {
   return { ngc_balance: data?.ngc_balance || 0 };
 }
 
-export async function requestWithdrawal(userId: string, amount: number, address: string) {
+export async function requestWithdrawal(userId: string, amount: number, address?: string) {
   return { success: true, message: 'Withdrawal request submitted' };
 }
 
