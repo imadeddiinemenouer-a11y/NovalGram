@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Star, Eye, BookOpen, Clock } from 'lucide-react';
+import { Star, Eye, BookOpen } from 'lucide-react';
 import { formatNumber } from '../../utils/helpers';
 import type { Novel } from '../../types';
 
