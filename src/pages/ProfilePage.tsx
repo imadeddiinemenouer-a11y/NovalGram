@@ -195,15 +195,21 @@ export default function ProfilePage() {
           <div className={`p-4 border-b ${isDark ? 'border-gray-800' : 'border-gray-100'}`}>
             <h2 className="font-semibold">Settings</h2>
           </div>
-          <button className={`w-full flex items-center gap-3 px-4 py-4 transition-colors ${
-            isDark ? 'hover:bg-gray-800 text-gray-300' : 'hover:bg-gray-50 text-gray-700'
-          }`}>
+          <button
+            onClick={() => navigate('/settings/account')}
+            className={`w-full flex items-center gap-3 px-4 py-4 transition-colors ${
+              isDark ? 'hover:bg-gray-800 text-gray-300' : 'hover:bg-gray-50 text-gray-700'
+            }`}
+          >
             <Settings className="w-5 h-5" />
             <span>Account Settings</span>
           </button>
-          <button className={`w-full flex items-center gap-3 px-4 py-4 transition-colors ${
-            isDark ? 'hover:bg-gray-800 text-gray-300' : 'hover:bg-gray-50 text-gray-700'
-          }`}>
+          <button
+            onClick={() => navigate('/settings/reading')}
+            className={`w-full flex items-center gap-3 px-4 py-4 transition-colors ${
+              isDark ? 'hover:bg-gray-800 text-gray-300' : 'hover:bg-gray-50 text-gray-700'
+            }`}
+          >
             <BookOpen className="w-5 h-5" />
             <span>Reading Preferences</span>
           </button>
