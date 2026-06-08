@@ -9,10 +9,10 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   refreshUser: () => Promise<void>;
+  updateUser: (updates: Partial<Profile>) => void; // <-- الجديد
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
 const USER_KEY = 'novelgram_user';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -26,7 +26,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
   const [isLoading, setIsLoading] = useState(false);
 
-  // أي تغيير في المستخدم -> نخزنه مباشرة
   useEffect(() => {
     if (user) {
       localStorage.setItem(USER_KEY, JSON.stringify(user));
@@ -49,6 +48,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } as Profile;
   }
 
+  // الدالة الجديدة لتحديث بيانات المستخدم محلياً
+  const updateUser = (updates: Partial<Profile>) => {
+    setUser(prev => prev ? { ...prev, ...updates } : null);
+  };
+
   async function signUp(email: string, password: string, username: string) {
     const { data: authData, error: authError } = await supabase.auth.signUp({ email, password });
     if (authError) throw authError;
@@ -59,7 +63,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         username,
         role: 'reader',
       });
-      // بناء مستخدم محلي وتسجيله فوراً
+      // نستخدم الاسم المُدخل الآن
       const local = buildLocalUser(authData.user.id, authData.user.email, username);
       setUser(local);
     }
@@ -71,6 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     if (data.user) {
       const profile = await getCurrentUser();
+      // إذا وجدنا بروفايل حقيقي نستخدمه، وإلا نصنع محلي بالإيميل
       const finalUser = profile || buildLocalUser(data.user.id, data.user.email);
       setUser(finalUser);
     }
@@ -87,7 +92,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, signUp, signIn, signOut, refreshUser }}>
+    <AuthContext.Provider value={{ user, isLoading, signUp, signIn, signOut, refreshUser, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
