@@ -378,3 +378,18 @@ export async function purchaseFeature(userId: string, featureId: string) {
 export async function getUserFeatures(userId: string) {
   return [];
 }
+// For AdRewardsPage
+export async function processAdReward(userId: string, durationSeconds: number) {
+  // محاكاة نجاح المكافأة
+  return { success: true, message: `Earned ${durationSeconds === 15 ? 5 : 3} NGC!` };
+}
+
+export async function getDailyAdStats(userId: string) {
+  // إحصائيات وهمية ليوم واحد
+  return {
+    ads_watched: 0,
+    max_ads: 20,
+    ngc_earned: 0,
+    max_ngc: 100
+  };
+}
