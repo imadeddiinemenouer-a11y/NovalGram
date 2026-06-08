@@ -6,7 +6,6 @@ import { ThemeProvider } from './context/ThemeContext';
 import Layout from './components/layout/Layout';
 import ErrorBoundary from './components/common/ErrorBoundary';
 
-// Pages
 import DiscoverPage from './pages/DiscoverPage';
 import LibraryPage from './pages/LibraryPage';
 import BookmarksPage from './pages/BookmarksPage';
@@ -23,6 +22,9 @@ import AdRewardsPage from './pages/AdRewardsPage';
 import LanguageNovelsPage from './pages/LanguageNovelsPage';
 import NotificationsPage from './pages/NotificationsPage';
 import NewNovelPage from './pages/NewNovelPage';
+import StudioChaptersPage from './pages/StudioChaptersPage';
+import EditNovelPage from './pages/EditNovelPage';
+import AuthorPage from './pages/AuthorPage';
 
 function App() {
   return (
@@ -30,16 +32,7 @@ function App() {
       <AuthProvider>
         <ThemeProvider>
           <BrowserRouter>
-            <Toaster 
-              position="top-center"
-              toastOptions={{
-                duration: 4000,
-                style: {
-                  background: '#363636',
-                  color: '#fff',
-                },
-              }}
-            />
+            <Toaster position="top-center" toastOptions={{ duration: 4000, style: { background: '#363636', color: '#fff' }}} />
             <Routes>
               <Route path="/login" element={<LoginPage />} />
               <Route path="/" element={<Layout />}>
@@ -48,10 +41,13 @@ function App() {
                 <Route path="bookmarks" element={<BookmarksPage />} />
                 <Route path="studio" element={<StudioPage />} />
                 <Route path="studio/new" element={<NewNovelPage />} />
+                <Route path="studio/edit/:novelId" element={<EditNovelPage />} />
+                <Route path="studio/chapters/:novelId" element={<StudioChaptersPage />} />
                 <Route path="profile" element={<ProfilePage />} />
                 <Route path="notifications" element={<NotificationsPage />} />
                 <Route path="novel/:id" element={<NovelPage />} />
                 <Route path="chapter/:chapterId" element={<ChapterPage />} />
+                <Route path="author/:authorId" element={<AuthorPage />} />
                 <Route path="search" element={<SearchPage />} />
                 <Route path="wallet" element={<DepositPage />} />
                 <Route path="store" element={<FeatureStorePage />} />
