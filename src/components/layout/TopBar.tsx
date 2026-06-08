@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Bell, Menu, X, Sun, Moon } from 'lucide-react';
+import { Search, Menu, X, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 
-export default function TopBar() {
+interface TopBarProps {
+  onMenuToggle: () => void;
+}
+
+export default function TopBar({ onMenuToggle }: TopBarProps) {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { theme, toggleTheme } = useTheme();
@@ -39,29 +43,29 @@ export default function TopBar() {
           </form>
         ) : (
           <>
-            <h1 
-              className="text-xl font-bold text-indigo-600 dark:text-red-400 cursor-pointer"
-              onClick={() => navigate('/')}
-            >
-              Novelgram
-            </h1>
+            <div className="flex items-center gap-2">
+              {/* زر القائمة الجانبية */}
+              <button
+                onClick={onMenuToggle}
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
+              >
+                <Menu className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+              </button>
+              <h1
+                className="text-xl font-bold text-indigo-600 dark:text-red-400 cursor-pointer"
+                onClick={() => navigate('/')}
+              >
+                Novelgram
+              </h1>
+            </div>
             <div className="flex items-center gap-3">
-              <button 
+              <button
                 onClick={() => setShowSearch(true)}
                 className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
               >
                 <Search className="w-5 h-5 text-gray-600 dark:text-gray-300" />
               </button>
-              {/* ✅ زر الإشعارات يعمل الآن */}
-              <button 
-                onClick={() => navigate('/notifications')}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors relative"
-              >
-                <Bell className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
-              </button>
-              {/* زر التبديل بين الوضع النهاري والليلي */}
-              <button 
+              <button
                 onClick={toggleTheme}
                 className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
                 title={theme === 'light' ? 'Switch to Dark' : 'Switch to Light'}
@@ -72,7 +76,7 @@ export default function TopBar() {
                   <Sun className="w-5 h-5 text-yellow-400" />
                 )}
               </button>
-              <button 
+              <button
                 onClick={() => navigate('/profile')}
                 className="w-8 h-8 bg-indigo-100 dark:bg-red-900 rounded-full flex items-center justify-center text-indigo-600 dark:text-red-300 font-medium text-sm"
               >
