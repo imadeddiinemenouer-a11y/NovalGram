@@ -4,16 +4,16 @@ import { Copy, CheckCircle, ArrowRight, Wallet, AlertTriangle, RefreshCw, Histor
 import { useAuth } from '../context/AuthContext';
 import { processDeposit, getUserBalance, supabase } from '../utils/api';
 import { formatNumber } from '../utils/helpers';
-import LoadingSpinner from '../components/common/LoadingSpinner';
 import toast from 'react-hot-toast';
 
 const DEPOSIT_ADDRESS = '0xF4b991bD77ABeF8964a1451B127316d2a66330cb';
-const USDT_CONTRACT = '0x55d398326f99059fF775485246999027B3197955';
+const MIN_DEPOSIT = 0.1;
 
 export default function DepositPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [txHash, setTxHash] = useState('');
+  const [amount, setAmount] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
   const [balance, setBalance] = useState<any>(null);
   const [transactions, setTransactions] = useState<any[]>([]);
@@ -61,12 +61,22 @@ export default function DepositPage() {
   }
 
   async function handleVerify() {
-    if (!user || !txHash.trim()) {
-      toast.error('Please enter transaction hash');
+    if (!user || !txHash.trim() || !amount.trim()) {
+      toast.error('Please enter both amount and transaction hash');
       return;
     }
 
-    // Validate txHash format
+    const parsedAmount = parseFloat(amount);
+    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+      toast.error('Invalid amount');
+      return;
+    }
+
+    if (parsedAmount < MIN_DEPOSIT) {
+      toast.error(`Minimum deposit is ${MIN_DEPOSIT} USDT`);
+      return;
+    }
+
     if (!txHash.match(/^0x[a-fA-F0-9]{64}$/)) {
       toast.error('Invalid transaction hash format');
       return;
@@ -79,6 +89,7 @@ export default function DepositPage() {
       if (result.success) {
         toast.success(result.message || 'Deposit successful!');
         setTxHash('');
+        setAmount('');
         loadBalance();
         loadTransactions();
       } else {
@@ -203,8 +214,7 @@ export default function DepositPage() {
                 </div>
                 <div className="bg-gray-50 rounded-lg p-3">
                   <p className="text-gray-500">Min Deposit</p>
-                  {/* تم التعديل هنا */}
-                  <p className="font-medium">0.1 USDT</p>
+                  <p className="font-medium">{MIN_DEPOSIT} USDT</p>
                 </div>
                 <div className="bg-gray-50 rounded-lg p-3">
                   <p className="text-gray-500">Rate</p>
@@ -213,18 +223,36 @@ export default function DepositPage() {
               </div>
             </div>
 
-            {/* Step 2: Enter TxHash */}
+            {/* Step 2: Enter Amount & TxHash */}
             <div className="bg-white rounded-xl shadow-sm p-6">
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-bold text-sm">2</div>
-                <h2 className="font-semibold text-lg">Enter Transaction Hash</h2>
+                <h2 className="font-semibold text-lg">Verify your Deposit</h2>
               </div>
 
               <p className="text-sm text-gray-500 mb-4">
-                After sending USDT, copy the transaction hash (TxID) from your wallet and paste it here.
+                Enter the amount you sent and the transaction hash to verify.
               </p>
 
               <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Amount Sent (USDT)
+                  </label>
+                  <input
+                    type="number"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    placeholder={`Minimum ${MIN_DEPOSIT} USDT`}
+                    min={MIN_DEPOSIT}
+                    step="0.01"
+                    className="w-full px-4 py-3 bg-gray-50 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  />
+                  {parseFloat(amount) > 0 && parseFloat(amount) < MIN_DEPOSIT && (
+                    <p className="text-red-500 text-sm mt-1">Minimum deposit is {MIN_DEPOSIT} USDT</p>
+                  )}
+                </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Transaction Hash (TxID)
@@ -240,7 +268,7 @@ export default function DepositPage() {
 
                 <button
                   onClick={handleVerify}
-                  disabled={isVerifying || !txHash.trim()}
+                  disabled={isVerifying || !txHash.trim() || !amount.trim()}
                   className="w-full flex items-center justify-center gap-2 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                 >
                   {isVerifying ? (
@@ -276,7 +304,7 @@ export default function DepositPage() {
                 </div>
                 <div className="flex items-start gap-3">
                   <div className="w-6 h-6 bg-indigo-200 rounded-full flex items-center justify-center text-indigo-700 text-xs font-bold flex-shrink-0">4</div>
-                  <p className="text-sm text-indigo-800">Paste it here and click verify - balance added automatically!</p>
+                  <p className="text-sm text-indigo-800">Paste the hash and enter the amount, then click verify</p>
                 </div>
               </div>
             </div>
