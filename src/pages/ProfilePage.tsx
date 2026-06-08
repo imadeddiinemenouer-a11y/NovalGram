@@ -6,7 +6,7 @@ import { formatDate } from '../utils/helpers';
 
 export default function ProfilePage() {
   const navigate = useNavigate();
-  const { user, signOut, updateUser } = useAuth(); // أضفنا updateUser
+  const { user, signOut, updateUser } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [displayName, setDisplayName] = useState(user?.display_name || '');
   const [bio, setBio] = useState(user?.bio || '');
@@ -33,7 +33,6 @@ export default function ProfilePage() {
   async function handleSave() {
     try {
       setIsSaving(true);
-      // نُحدّث فقط محلياً فوراً، دون انتظار Supabase
       updateUser({ display_name: displayName, bio, updated_at: new Date().toISOString() });
       setIsEditing(false);
     } catch (error) {
@@ -43,6 +42,9 @@ export default function ProfilePage() {
     }
   }
 
+  // استخراج الحرف الأول بأمان
+  const avatarLetter = user.display_name?.[0] || user.username?.[0] || 'U';
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="bg-white shadow-sm">
@@ -50,7 +52,7 @@ export default function ProfilePage() {
           <div className="flex items-start gap-6">
             <div className="relative">
               <div className="w-24 h-24 bg-indigo-100 rounded-2xl flex items-center justify-center text-indigo-600 text-3xl font-bold">
-                {user.display_name?.[0] || user.username[0]}
+                {avatarLetter}
               </div>
               <button className="absolute -bottom-2 -right-2 w-8 h-8 bg-gray-900 rounded-full flex items-center justify-center text-white hover:bg-gray-800 transition-colors">
                 <Camera className="w-4 h-4" />
@@ -99,9 +101,9 @@ export default function ProfilePage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <h1 className="text-2xl font-bold text-gray-900">
-                        {user.display_name || user.username}
+                        {user.display_name || user.username || 'User'}
                       </h1>
-                      <p className="text-gray-500">@{user.username}</p>
+                      <p className="text-gray-500">@{user.username || 'user'}</p>
                     </div>
                     <button
                       onClick={() => setIsEditing(true)}
@@ -117,7 +119,7 @@ export default function ProfilePage() {
                       Member since {formatDate(user.created_at)}
                     </span>
                     <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full capitalize">
-                      {user.role}
+                      {user.role || 'reader'}
                     </span>
                   </div>
                 </>
