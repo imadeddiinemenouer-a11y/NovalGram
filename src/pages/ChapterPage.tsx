@@ -1,14 +1,27 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 import ChapterReader from '../components/novels/ChapterReader';
+import { useTheme } from '../context/ThemeContext';
 
 export default function ChapterPage() {
   const { chapterId } = useParams<{ chapterId: string }>();
+  const navigate = useNavigate();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
 
   if (!chapterId) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-500">Chapter not found</p>
+      <div className={`min-h-screen flex flex-col items-center justify-center ${isDark ? 'bg-gray-950 text-gray-400' : 'bg-gray-50 text-gray-500'}`}>
+        <p className="text-lg mb-4">Chapter not found</p>
+        <button
+          onClick={() => navigate(-1)}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-colors ${
+            isDark ? 'bg-gray-800 hover:bg-gray-700' : 'bg-gray-200 hover:bg-gray-300'
+          }`}
+        >
+          <ArrowLeft className="w-4 h-4" /> Go Back
+        </button>
       </div>
     );
   }
