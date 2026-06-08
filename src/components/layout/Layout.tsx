@@ -1,19 +1,18 @@
 import React, { useState } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { X, Wallet, ShoppingBag, PenTool, Search, Gift, ArrowUpRight, BookOpen, Bookmark, User, Settings, Globe } from 'lucide-react';
+import { X, Wallet, ShoppingBag, PenTool, Search, Gift, ArrowUpRight, Bookmark, Globe, User, Settings } from 'lucide-react';
 import TopBar from './TopBar';
 import BottomNav from './BottomNav';
 import { useAuth } from '../../context/AuthContext';
-import { useTheme } from '../../context/ThemeContext';
 
 export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
-  const { theme } = useTheme();
 
   const closeSidebar = () => setSidebarOpen(false);
+  const openSidebar = () => setSidebarOpen(true);
 
   const menuItems = [
     { path: '/search', label: 'Search', icon: Search },
@@ -28,20 +27,28 @@ export default function Layout() {
 
   return (
     <div className="min-h-screen bg-[var(--color-bg-primary)] transition-colors relative">
-      <TopBar onMenuToggle={() => setSidebarOpen(true)} />
+      <TopBar onMenuToggle={openSidebar} />
+
+      {/* 🔴 زر اختبار تشخيصي كبير جداً */}
+      <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-30">
+        <button 
+          onClick={openSidebar}
+          className="bg-red-600 text-white px-8 py-4 rounded-full font-bold text-xl shadow-2xl animate-pulse hover:bg-red-700"
+        >
+          انقر هنا لفتح القائمة (اختبار)
+        </button>
+      </div>
 
       {/* القائمة الجانبية */}
       {sidebarOpen && (
         <>
-          {/* خلفية معتمة */}
           <div
             className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 transition-opacity"
             onClick={closeSidebar}
           />
-          {/* لوحة القائمة */}
-          <div className="fixed top-0 left-0 h-full w-72 max-w-[85vw] bg-white dark:bg-gray-900 shadow-2xl z-50 overflow-y-auto transform transition-transform duration-300">
+          <div className="fixed top-0 left-0 h-full w-72 max-w-[85vw] bg-white dark:bg-gray-900 shadow-2xl z-50 overflow-y-auto">
             <div className="p-5 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">Menu</h2>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">قائمة التصفح</h2>
               <button onClick={closeSidebar} className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full">
                 <X className="w-5 h-5 text-gray-500" />
               </button>
@@ -73,25 +80,11 @@ export default function Layout() {
             </div>
 
             <div className="border-t border-gray-200 dark:border-gray-800 p-3 mt-auto">
-              <button
-                onClick={() => {
-                  navigate('/profile');
-                  closeSidebar();
-                }}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-700 dark:text-gray-300"
-              >
-                <User className="w-5 h-5" />
-                <span>Profile</span>
+              <button onClick={() => { navigate('/profile'); closeSidebar(); }} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-700 dark:text-gray-300">
+                <User className="w-5 h-5" /> <span>Profile</span>
               </button>
-              <button
-                onClick={() => {
-                  navigate('/settings');
-                  closeSidebar();
-                }}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-700 dark:text-gray-300"
-              >
-                <Settings className="w-5 h-5" />
-                <span>Settings</span>
+              <button onClick={() => { navigate('/settings'); closeSidebar(); }} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-700 dark:text-gray-300">
+                <Settings className="w-5 h-5" /> <span>Settings</span>
               </button>
             </div>
           </div>
