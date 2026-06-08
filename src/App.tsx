@@ -24,6 +24,9 @@ import NewNovelPage from './pages/NewNovelPage';
 import StudioChaptersPage from './pages/StudioChaptersPage';
 import EditNovelPage from './pages/EditNovelPage';
 import AuthorPage from './pages/AuthorPage';
+import SettingsPage from './pages/SettingsPage';
+import AccountSettingsPage from './pages/AccountSettingsPage';
+import ReadingPreferencesPage from './pages/ReadingPreferencesPage';
 
 function App() {
   return (
@@ -52,6 +55,9 @@ function App() {
                 <Route path="store" element={<FeatureStorePage />} />
                 <Route path="rewards" element={<AdRewardsPage />} />
                 <Route path="language/:langCode" element={<LanguageNovelsPage />} />
+                <Route path="settings" element={<SettingsPage />} />
+                <Route path="settings/account" element={<AccountSettingsPage />} />
+                <Route path="settings/reading" element={<ReadingPreferencesPage />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Route>
             </Routes>
