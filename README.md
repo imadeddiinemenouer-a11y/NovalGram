@@ -330,4 +330,4 @@ Special thanks to:
 
 ---
 
-**Novelgram** - Stories that ping you back, in every language.
+**Novelgram** - Stories that ping you back, in every language..
