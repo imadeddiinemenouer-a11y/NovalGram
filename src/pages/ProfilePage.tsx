@@ -2,13 +2,11 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Settings, BookOpen, Heart, MessageCircle, LogOut, Edit, Camera } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { supabase } from '../utils/api';
 import { formatDate } from '../utils/helpers';
-import LoadingSpinner from '../components/common/LoadingSpinner';
 
 export default function ProfilePage() {
   const navigate = useNavigate();
-  const { user, signOut } = useAuth();
+  const { user, signOut, updateUser } = useAuth(); // أضفنا updateUser
   const [isEditing, setIsEditing] = useState(false);
   const [displayName, setDisplayName] = useState(user?.display_name || '');
   const [bio, setBio] = useState(user?.bio || '');
@@ -35,18 +33,9 @@ export default function ProfilePage() {
   async function handleSave() {
     try {
       setIsSaving(true);
-      const { error } = await supabase
-        .from('profiles')
-        .update({ 
-          display_name: displayName,
-          bio,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', user.id);
-
-      if (error) throw error;
+      // نُحدّث فقط محلياً فوراً، دون انتظار Supabase
+      updateUser({ display_name: displayName, bio, updated_at: new Date().toISOString() });
       setIsEditing(false);
-      window.location.reload();
     } catch (error) {
       console.error('Error updating profile:', error);
     } finally {
@@ -56,7 +45,6 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Profile Header */}
       <div className="bg-white shadow-sm">
         <div className="max-w-4xl mx-auto px-4 py-8">
           <div className="flex items-start gap-6">
@@ -139,7 +127,6 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* Stats */}
       <div className="max-w-4xl mx-auto px-4 py-6">
         <div className="grid grid-cols-3 gap-4 mb-6">
           <div className="bg-white rounded-xl p-4 text-center shadow-sm">
@@ -159,22 +146,18 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Settings */}
         <div className="bg-white rounded-xl shadow-sm overflow-hidden">
           <div className="p-4 border-b border-gray-100">
             <h2 className="font-semibold text-gray-900">Settings</h2>
           </div>
-
           <button className="w-full flex items-center gap-3 px-4 py-4 hover:bg-gray-50 transition-colors">
             <Settings className="w-5 h-5 text-gray-600" />
             <span className="flex-1 text-left">Account Settings</span>
           </button>
-
           <button className="w-full flex items-center gap-3 px-4 py-4 hover:bg-gray-50 transition-colors">
             <BookOpen className="w-5 h-5 text-gray-600" />
             <span className="flex-1 text-left">Reading Preferences</span>
           </button>
-
           <button 
             onClick={() => signOut()}
             className="w-full flex items-center gap-3 px-4 py-4 hover:bg-red-50 text-red-600 transition-colors"
