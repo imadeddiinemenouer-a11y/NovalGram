@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Loader2, BookOpen, Globe, Tag } from 'lucide-react';
+import { ArrowLeft, Loader2, BookOpen, Globe, Tag, Image } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import { supabase } from '../utils/api';
+import { supabase, uploadCover } from '../utils/api';
 import toast from 'react-hot-toast';
 
 export default function NewNovelPage() {
@@ -17,11 +17,23 @@ export default function NewNovelPage() {
   const [language, setLanguage] = useState('en');
   const [genres, setGenres] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [coverFile, setCoverFile] = useState<File | null>(null);
+  const [coverPreview, setCoverPreview] = useState<string | null>(null);
 
   const genreOptions = ['Fantasy', 'Romance', 'Sci-Fi', 'Mystery', 'Horror', 'Adventure', 'Comedy', 'Drama', 'Action', 'Thriller'];
 
   function toggleGenre(genre: string) {
     setGenres(prev => prev.includes(genre) ? prev.filter(g => g !== genre) : [...prev, genre]);
+  }
+
+  function handleCoverChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file) {
+      setCoverFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => setCoverPreview(reader.result as string);
+      reader.readAsDataURL(file);
+    }
   }
 
   async function handleCreate(e: React.FormEvent) {
@@ -51,8 +63,23 @@ export default function NewNovelPage() {
         .single();
 
       if (error) throw error;
+      
+      const novelId = data.id;
+      
+      // رفع الغلاف إذا وُجد
+      if (coverFile) {
+        try {
+          const coverUrl = await uploadCover(novelId, coverFile);
+          if (coverUrl) {
+            await supabase.from('novels').update({ cover_image: coverUrl }).eq('id', novelId);
+          }
+        } catch (err) {
+          console.error('Cover upload failed:', err);
+        }
+      }
+      
       toast.success('Novel created!');
-      navigate(`/studio/chapters/${data.id}`);
+      navigate(`/studio/chapters/${novelId}`);
     } catch (err: any) {
       toast.error(err.message || 'Failed to create novel');
     } finally {
@@ -109,6 +136,24 @@ export default function NewNovelPage() {
                   : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500'
               }`}
             />
+          </div>
+          <div>
+            <label className={`block text-sm font-medium mb-2 flex items-center gap-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+              <Image className="w-4 h-4" /> Cover Image
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleCoverChange}
+              className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 transition-all ${
+                isDark 
+                  ? 'bg-gray-800 border-gray-700 text-white focus:ring-red-500' 
+                  : 'bg-white border-gray-200 text-gray-900 focus:ring-indigo-500'
+              }`}
+            />
+            {coverPreview && (
+              <img src={coverPreview} alt="Cover preview" className="mt-3 w-full h-48 object-cover rounded-xl shadow-md" />
+            )}
           </div>
           <div>
             <label className={`block text-sm font-medium mb-2 flex items-center gap-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
