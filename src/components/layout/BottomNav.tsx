@@ -84,7 +84,7 @@ export default function BottomNav() {
           className={`flex flex-col items-center gap-1 px-4 py-1 rounded-xl transition-all ${
             isActive('/profile')
               ? 'text-indigo-600 dark:text-red-400'
-ذ              : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
+               : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
           }`}
         >
           <User className="w-6 h-6" />
