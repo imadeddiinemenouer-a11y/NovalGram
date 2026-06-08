@@ -124,3 +124,38 @@ export interface NovelStats {
   new_comments: number;
   donations_total: number;
 }
+// Helper functions for language support
+export function getLanguageByCode(code: string) {
+  const languages: Record<string, { name: string; flag: string }> = {
+    en: { name: 'English', flag: '🇬🇧' },
+    ar: { name: 'العربية', flag: '🇸🇦' },
+    fr: { name: 'Français', flag: '🇫🇷' },
+    es: { name: 'Español', flag: '🇪🇸' },
+    de: { name: 'Deutsch', flag: '🇩🇪' },
+    zh: { name: '中文', flag: '🇨🇳' },
+    ja: { name: '日本語', flag: '🇯🇵' },
+    ko: { name: '한국어', flag: '🇰🇷' },
+    ru: { name: 'Русский', flag: '🇷🇺' },
+    tr: { name: 'Türkçe', flag: '🇹🇷' },
+    hi: { name: 'हिन्दी', flag: '🇮🇳' },
+    pt: { name: 'Português', flag: '🇧🇷' },
+    it: { name: 'Italiano', flag: '🇮🇹' },
+    id: { name: 'Bahasa Indonesia', flag: '🇮🇩' },
+    th: { name: 'ไทย', flag: '🇹🇭' },
+    vi: { name: 'Tiếng Việt', flag: '🇻🇳' },
+    pl: { name: 'Polski', flag: '🇵🇱' },
+    nl: { name: 'Nederlands', flag: '🇳🇱' },
+    sv: { name: 'Svenska', flag: '🇸🇪' },
+    fa: { name: 'فارسی', flag: '🇮🇷' },
+    ur: { name: 'اردو', flag: '🇵🇰' },
+    bn: { name: 'বাংলা', flag: '🇧🇩' },
+    ta: { name: 'தமிழ்', flag: '🇮🇳' },
+    ms: { name: 'Bahasa Melayu', flag: '🇲🇾' },
+    fil: { name: 'Filipino', flag: '🇵🇭' },
+  };
+  return languages[code] || { name: code, flag: '🌐' };
+}
+
+export function isRTL(code: string): boolean {
+  return ['ar', 'fa', 'ur'].includes(code);
+}
