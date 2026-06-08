@@ -1,38 +1,36 @@
 import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 
-type Theme = 'light' | 'dark' | 'sepia';
+type Theme = 'light' | 'dark';
 
 interface ThemeContextType {
   theme: Theme;
-  setTheme: (theme: Theme) => void;
-  fontSize: number;
-  setFontSize: (size: number) => void;
+  toggleTheme: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>(() => {
-    const saved = localStorage.getItem('novelgram-theme');
-    return (saved as Theme) || 'light';
-  });
-
-  const [fontSize, setFontSize] = useState(() => {
-    const saved = localStorage.getItem('novelgram-fontsize');
-    return saved ? parseInt(saved) : 16;
+    const saved = localStorage.getItem('novelgram_theme');
+    return (saved === 'light' || saved === 'dark') ? saved : 'light';
   });
 
   useEffect(() => {
-    localStorage.setItem('novelgram-theme', theme);
-    localStorage.setItem('novelgram-fontsize', fontSize.toString());
-
     const root = document.documentElement;
-    root.classList.remove('light', 'dark', 'sepia');
-    root.classList.add(theme);
-  }, [theme, fontSize]);
+    if (theme === 'dark') {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+    localStorage.setItem('novelgram_theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
+  };
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, fontSize, setFontSize }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   );
