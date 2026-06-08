@@ -17,12 +17,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // محاولة تحميل المستخدم عند فتح الموقع
   useEffect(() => {
     checkUser();
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
         const profile = await getCurrentUser();
-        setUser(profile);
+        setUser(profile || buildLocalUser(session.user.id, session.user.email));
       } else {
         setUser(null);
       }
@@ -30,6 +31,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
     return () => subscription.unsubscribe();
   }, []);
+
+  // دالة مساعدة لبناء كائن مستخدم محلي في حال عدم وجود بروفايل
+  function buildLocalUser(id: string, email?: string): Profile {
+    return {
+      id,
+      username: email?.split('@')[0] || 'user',
+      display_name: email?.split('@')[0] || 'User',
+      bio: null,
+      avatar_url: null,
+      role: 'reader',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    } as Profile;
+  }
 
   async function checkUser() {
     try {
@@ -43,21 +58,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function signUp(email: string, password: string, username: string) {
-    const { data: authData, error: authError } = await supabase.auth.signUp({ email, password });
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
     if (authError) throw authError;
+
     if (authData.user) {
-      const { error: profileError } = await supabase.from('profiles').insert({
-        id: authData.user.id, username, role: 'reader'
-      });
-      if (profileError) throw profileError;
-      await checkUser();
+      // محاولة إدراج البروفايل
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert({
+          id: authData.user.id,
+          username,
+          role: 'reader'
+        });
+
+      if (profileError) {
+        console.warn('Could not insert profile, using local user');
+      }
+
+      // بناء كائن مستخدم مباشرة وتسجيل الدخول
+      const localUser = buildLocalUser(authData.user.id, authData.user.email);
+      setUser(localUser);
     }
   }
 
   async function signIn(email: string, password: string) {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
     if (error) throw error;
-    await checkUser();
+
+    if (data.user) {
+      // محاولة جلب البروفايل الحقيقي، وإلا استخدم المحلي
+      const profile = await getCurrentUser();
+      setUser(profile || buildLocalUser(data.user.id, data.user.email));
+    }
   }
 
   async function signOut() {
