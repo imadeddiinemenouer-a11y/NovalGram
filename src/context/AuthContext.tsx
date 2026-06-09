@@ -17,7 +17,6 @@ const USER_KEY = 'novelgram_user';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<Profile | null>(() => {
-    // استعادة سريعة من localStorage لتفادي شاشة بيضاء
     try {
       const stored = localStorage.getItem(USER_KEY);
       return stored ? JSON.parse(stored) : null;
@@ -27,7 +26,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
   const [isLoading, setIsLoading] = useState(true);
 
-  // مستمع لـ Supabase Auth
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
@@ -41,7 +39,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(false);
     });
 
-    // فحص أولي
     checkUser();
 
     return () => subscription.unsubscribe();
