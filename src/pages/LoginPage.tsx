@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Mail, Lock, User, ArrowRight, Loader2, Eye, EyeOff, Sparkles } from 'lucide-react';
+import { Mail, Lock, User, ArrowRight, Loader2, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import toast from 'react-hot-toast';
@@ -19,7 +19,7 @@ export default function LoginPage() {
     email: '',
     password: '',
     username: '',
-    confirmPassword: ''
+    confirmPassword: '',
   });
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -59,52 +59,73 @@ export default function LoginPage() {
   }
 
   return (
-    <div className={`min-h-screen flex items-center justify-center p-4 transition-colors ${
-      isDark 
-        ? 'bg-gradient-to-br from-gray-950 via-gray-900 to-black' 
-        : 'bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100'
-    }`}>
-      {/* Decorative blobs */}
+    <div
+      className={`min-h-screen flex items-center justify-center p-4 transition-colors ${
+        isDark
+          ? 'bg-[var(--void)]'
+          : 'bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50'
+      }`}
+    >
+      {/* زخارف خلفية متحركة (Orbs) */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className={`absolute -top-40 -right-40 w-80 h-80 rounded-full blur-3xl opacity-20 ${
-          isDark ? 'bg-red-500' : 'bg-indigo-400'
-        }`} />
-        <div className={`absolute -bottom-40 -left-40 w-80 h-80 rounded-full blur-3xl opacity-20 ${
-          isDark ? 'bg-purple-500' : 'bg-pink-400'
-        }`} />
+        <div
+          className={`absolute -top-40 -right-40 w-80 h-80 rounded-full blur-3xl opacity-20 animate-pulse-slow ${
+            isDark ? 'bg-[var(--v)]' : 'bg-indigo-300'
+          }`}
+        />
+        <div
+          className={`absolute -bottom-40 -left-40 w-80 h-80 rounded-full blur-3xl opacity-20 animate-pulse-slow ${
+            isDark ? 'bg-[var(--mg)]' : 'bg-pink-300'
+          }`}
+          style={{ animationDelay: '1s' }}
+        />
       </div>
 
-      <div className={`relative w-full max-w-md p-8 rounded-3xl shadow-2xl backdrop-blur-sm transition-colors ${
-        isDark ? 'bg-gray-900/90 border border-gray-800' : 'bg-white/90 border border-white'
-      }`}>
-        {/* Logo */}
+      <div
+        className={`relative w-full max-w-md p-8 rounded-3xl shadow-2xl backdrop-blur-xl border transition-colors ${
+          isDark
+            ? 'bg-[var(--surface)] border-[var(--b2)]'
+            : 'bg-white/80 border-white'
+        }`}
+      >
+        {/* الشعار */}
         <div className="text-center mb-8">
-          <div className={`w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg ${
-            isDark ? 'bg-red-600/20' : 'bg-indigo-100'
-          }`}>
-            <BookOpen className={`w-10 h-10 ${isDark ? 'text-red-400' : 'text-indigo-600'}`} />
+          <div
+            className={`w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg ${
+              isDark ? 'bg-[var(--b1)]' : 'bg-indigo-100'
+            }`}
+          >
+            <svg className="w-10 h-10" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#8b5cf6"/>
+                  <stop offset="100%" stopColor="#db2777"/>
+                </linearGradient>
+              </defs>
+              <rect x="2" y="3" width="28" height="26" rx="7" fill="none" stroke="url(#lg)" strokeWidth="2" opacity="0.6"/>
+              <rect x="2" y="3" width="14" height="26" rx="7" fill="url(#lg)" opacity="0.9"/>
+              <rect x="13" y="3" width="3" height="26" fill="url(#lg)" opacity="0.9"/>
+              <text x="10" y="21" fontSize="11" fontWeight="900" fill="white" fontFamily="Georgia,serif" textAnchor="middle">N</text>
+              <circle cx="28" cy="6" r="5" fill="url(#lg)"/>
+              <text x="28" y="9" fontSize="6" fontWeight="900" fill="white" textAnchor="middle">!</text>
+            </svg>
           </div>
-          <h1 className={`text-2xl font-extrabold tracking-tight ${
-            isDark ? 'text-white' : 'text-gray-900'
-          }`}>
-            {isLogin ? 'Welcome Back' : 'Create Account'}
+          <h1 className={`text-2xl font-serif font-bold tracking-tight ${isDark ? 'text-[var(--txt)]' : 'text-gray-900'}`}>
+            {isLogin ? 'Welcome Back' : 'Join Novelgram'}
           </h1>
-          <p className={`mt-2 text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-            {isLogin 
-              ? 'Sign in to continue your reading journey' 
-              : 'Join thousands of readers and writers'
-            }
+          <p className={`mt-1.5 text-sm ${isDark ? 'text-[var(--txt2)]' : 'text-gray-500'}`}>
+            {isLogin ? 'Sign in to continue your journey' : 'Start your writing adventure today'}
           </p>
         </div>
 
-        {/* Toggle Login/Signup */}
-        <div className={`flex p-1 rounded-xl mb-6 ${isDark ? 'bg-gray-800' : 'bg-gray-100'}`}>
+        {/* أزرار التبديل بين تسجيل الدخول والإنشاء */}
+        <div className={`flex p-1 rounded-xl mb-6 ${isDark ? 'bg-[var(--surface2)]' : 'bg-gray-100'}`}>
           <button
             onClick={() => setIsLogin(true)}
             className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all ${
               isLogin
-                ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
-                : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+                ? 'bg-white dark:bg-[var(--surface3)] text-[var(--txt)] shadow-sm'
+                : 'text-[var(--txt3)] hover:text-[var(--txt)]'
             }`}
           >
             Sign In
@@ -113,8 +134,8 @@ export default function LoginPage() {
             onClick={() => setIsLogin(false)}
             className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all ${
               !isLogin
-                ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
-                : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+                ? 'bg-white dark:bg-[var(--surface3)] text-[var(--txt)] shadow-sm'
+                : 'text-[var(--txt3)] hover:text-[var(--txt)]'
             }`}
           >
             Sign Up
@@ -122,23 +143,23 @@ export default function LoginPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Username (Sign Up) */}
+          {/* اسم المستخدم (للتسجيل فقط) */}
           {!isLogin && (
             <div>
-              <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+              <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-[var(--txt2)]' : 'text-gray-700'}`}>
                 Username
               </label>
               <div className="relative">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--txt3)]" />
                 <input
                   type="text"
                   name="username"
                   value={formData.username}
                   onChange={handleChange}
                   placeholder="Choose a username"
-                  className={`w-full pl-12 pr-4 py-3 rounded-xl border transition-all focus:ring-2 focus:outline-none ${
-                    isDark 
-                      ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-500 focus:ring-red-500 focus:border-red-500' 
+                  className={`w-full pl-11 pr-4 py-3 rounded-xl border transition-all focus:ring-2 focus:outline-none ${
+                    isDark
+                      ? 'bg-[var(--surface2)] border-[var(--b2)] text-[var(--txt)] placeholder-[var(--txt3)] focus:ring-[var(--v)] focus:border-[var(--v)]'
                       : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500'
                   }`}
                   required={!isLogin}
@@ -147,22 +168,22 @@ export default function LoginPage() {
             </div>
           )}
 
-          {/* Email */}
+          {/* البريد الإلكتروني */}
           <div>
-            <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+            <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-[var(--txt2)]' : 'text-gray-700'}`}>
               Email
             </label>
             <div className="relative">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--txt3)]" />
               <input
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="your@email.com"
-                className={`w-full pl-12 pr-4 py-3 rounded-xl border transition-all focus:ring-2 focus:outline-none ${
-                  isDark 
-                    ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-500 focus:ring-red-500 focus:border-red-500' 
+                className={`w-full pl-11 pr-4 py-3 rounded-xl border transition-all focus:ring-2 focus:outline-none ${
+                  isDark
+                    ? 'bg-[var(--surface2)] border-[var(--b2)] text-[var(--txt)] placeholder-[var(--txt3)] focus:ring-[var(--v)] focus:border-[var(--v)]'
                     : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500'
                 }`}
                 required
@@ -170,22 +191,22 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Password */}
+          {/* كلمة المرور */}
           <div>
-            <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+            <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-[var(--txt2)]' : 'text-gray-700'}`}>
               Password
             </label>
             <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--txt3)]" />
               <input
                 type={showPassword ? 'text' : 'password'}
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Enter your password"
-                className={`w-full pl-12 pr-12 py-3 rounded-xl border transition-all focus:ring-2 focus:outline-none ${
-                  isDark 
-                    ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-500 focus:ring-red-500 focus:border-red-500' 
+                className={`w-full pl-11 pr-12 py-3 rounded-xl border transition-all focus:ring-2 focus:outline-none ${
+                  isDark
+                    ? 'bg-[var(--surface2)] border-[var(--b2)] text-[var(--txt)] placeholder-[var(--txt3)] focus:ring-[var(--v)] focus:border-[var(--v)]'
                     : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500'
                 }`}
                 required
@@ -194,30 +215,30 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--txt3)] hover:text-[var(--txt)] transition-colors"
               >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
           </div>
 
-          {/* Confirm Password (Sign Up) */}
+          {/* تأكيد كلمة المرور (للتسجيل فقط) */}
           {!isLogin && (
             <div>
-              <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+              <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-[var(--txt2)]' : 'text-gray-700'}`}>
                 Confirm Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--txt3)]" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   placeholder="Confirm your password"
-                  className={`w-full pl-12 pr-4 py-3 rounded-xl border transition-all focus:ring-2 focus:outline-none ${
-                    isDark 
-                      ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-500 focus:ring-red-500 focus:border-red-500' 
+                  className={`w-full pl-11 pr-4 py-3 rounded-xl border transition-all focus:ring-2 focus:outline-none ${
+                    isDark
+                      ? 'bg-[var(--surface2)] border-[var(--b2)] text-[var(--txt)] placeholder-[var(--txt3)] focus:ring-[var(--v)] focus:border-[var(--v)]'
                       : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500'
                   }`}
                   required={!isLogin}
@@ -226,14 +247,14 @@ export default function LoginPage() {
             </div>
           )}
 
-          {/* Submit Button */}
+          {/* زر الإرسال */}
           <button
             type="submit"
             disabled={isLoading}
-            className={`w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-semibold transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed ${
-              isDark 
-                ? 'bg-gradient-to-r from-red-600 to-pink-600 text-white hover:from-red-500 hover:to-pink-500' 
-                : 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-500 hover:to-purple-500'
+            className={`w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-semibold transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none ${
+              isDark
+                ? 'bg-gradient-to-r from-[var(--v)] to-[var(--mg)] text-white shadow-lg shadow-[var(--v)]/30'
+                : 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/30'
             }`}
           >
             {isLoading ? (
@@ -247,16 +268,13 @@ export default function LoginPage() {
           </button>
         </form>
 
-        {/* Footer */}
+        {/* تذييل */}
         <div className="mt-6 text-center">
-          <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-            {isLogin ? "Don't have an account?" : 'Already have an account?'}
-            {' '}
+          <p className={`text-sm ${isDark ? 'text-[var(--txt2)]' : 'text-gray-500'}`}>
+            {isLogin ? "Don't have an account?" : 'Already have an account?'}{' '}
             <button
               onClick={() => setIsLogin(!isLogin)}
-              className={`font-semibold hover:underline ${
-                isDark ? 'text-red-400' : 'text-indigo-600'
-              }`}
+              className={`font-semibold hover:underline ${isDark ? 'text-[var(--vb)]' : 'text-indigo-600'}`}
             >
               {isLogin ? 'Sign up' : 'Sign in'}
             </button>
