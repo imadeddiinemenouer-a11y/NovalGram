@@ -16,6 +16,31 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <title>Novelgram — Where Stories Come Alive</title>
+    <style>
+      /* ماسك الأخطاء */
+      #error-overlay {
+        display: none;
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: #05050a;
+        color: #f87171;
+        z-index: 99999;
+        padding: 20px;
+        font-family: monospace;
+        font-size: 14px;
+        white-space: pre-wrap;
+        overflow-y: auto;
+        line-height: 1.6;
+      }
+      #error-overlay::before {
+        content: "🚨 JavaScript Error";
+        display: block;
+        font-size: 1.2em;
+        font-weight: bold;
+        margin-bottom: 16px;
+        color: #db2777;
+      }
+    </style>
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
@@ -25,7 +50,25 @@
     </script>
   </head>
   <body>
+    <div id="error-overlay"></div>
     <div id="root"></div>
+    <script>
+      // ماسك الأخطاء العامة
+      window.onerror = function(msg, url, line, col, error) {
+        const el = document.getElementById('error-overlay');
+        el.style.display = 'block';
+        el.textContent += (el.textContent ? '\n\n' : '') +
+          '📄 ' + url + ':' + line + '\n' +
+          '❌ ' + msg + '\n' +
+          (error && error.stack ? '📚 Stack:\n' + error.stack : '');
+        return true;
+      };
+      window.onunhandledrejection = function(event) {
+        const el = document.getElementById('error-overlay');
+        el.style.display = 'block';
+        el.textContent += '\n\n⚠️ Unhandled Promise: ' + event.reason;
+      };
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
