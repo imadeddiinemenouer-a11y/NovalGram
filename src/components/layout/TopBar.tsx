@@ -37,7 +37,7 @@ export default function TopBar({ onMenuToggle }: TopBarProps) {
               onChange={(e) => setSearchQuery(e.target.value)}
               autoFocus
             />
-            <button type="button" onClick={() => setShowSearch(false)} className="p-2">
+            <button type="button" onClick={() => setShowSearch(false)} className="p-2" aria-label="Close search">
               <X className="w-5 h-5 text-[var(--txt3)]" />
             </button>
           </form>
@@ -47,6 +47,7 @@ export default function TopBar({ onMenuToggle }: TopBarProps) {
               <button
                 onClick={onMenuToggle}
                 className="w-9 h-9 flex items-center justify-center rounded-full bg-[var(--surface2)] text-[var(--txt2)] hover:text-[var(--txt)] transition-colors"
+                aria-label="Open menu"
               >
                 <Menu className="w-4 h-4" />
               </button>
@@ -80,6 +81,7 @@ export default function TopBar({ onMenuToggle }: TopBarProps) {
               <button
                 onClick={() => navigate('/wallet')}
                 className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-[rgba(217,119,6,0.14)] border border-[rgba(245,158,11,0.28)] text-[#f59e0b] text-xs font-bold transition-all active:scale-90"
+                aria-label="Open wallet"
               >
                 <svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12">
                   <circle cx="12" cy="12" r="10"/>
@@ -87,17 +89,17 @@ export default function TopBar({ onMenuToggle }: TopBarProps) {
                 </svg>
                 <span>1.2K</span>
               </button>
-              <button onClick={() => setShowSearch(true)} className="w-9 h-9 flex items-center justify-center rounded-full bg-[var(--surface2)] text-[var(--txt2)] hover:text-[var(--txt)] transition-colors">
+              <button onClick={() => setShowSearch(true)} className="w-9 h-9 flex items-center justify-center rounded-full bg-[var(--surface2)] text-[var(--txt2)] hover:text-[var(--txt)] transition-colors" aria-label="Search">
                 <Search className="w-4 h-4" />
               </button>
-              <button onClick={() => navigate('/notifications')} className="w-9 h-9 flex items-center justify-center rounded-full bg-[var(--surface2)] text-[var(--txt2)] hover:text-[var(--txt)] transition-colors relative">
+              <button onClick={() => navigate('/notifications')} className="w-9 h-9 flex items-center justify-center rounded-full bg-[var(--surface2)] text-[var(--txt2)] hover:text-[var(--txt)] transition-colors relative" aria-label="Notifications">
                 <Bell className="w-4 h-4" />
                 <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[var(--mg)] border-2 border-[var(--void)]" />
               </button>
-              <button onClick={toggleTheme} className="w-9 h-9 flex items-center justify-center rounded-full bg-[var(--surface2)] text-[var(--txt2)] hover:text-[var(--txt)] transition-colors">
+              <button onClick={toggleTheme} className="w-9 h-9 flex items-center justify-center rounded-full bg-[var(--surface2)] text-[var(--txt2)] hover:text-[var(--txt)] transition-colors" aria-label="Toggle theme">
                 {theme === 'dark' ? <Sun className="w-4 h-4 text-yellow-400" /> : <Moon className="w-4 h-4" />}
               </button>
-              <button onClick={() => navigate('/profile')} className="w-8 h-8 rounded-full bg-gradient-to-r from-[var(--v)] to-[var(--mg)] flex items-center justify-center text-white text-sm font-bold">
+              <button onClick={() => navigate('/profile')} className="w-8 h-8 rounded-full bg-gradient-to-r from-[var(--v)] to-[var(--mg)] flex items-center justify-center text-white text-sm font-bold" aria-label="My profile">
                 {user?.display_name?.[0] || user?.username?.[0] || 'U'}
               </button>
             </div>
