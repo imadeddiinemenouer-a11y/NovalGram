@@ -9,11 +9,10 @@ import type { Novel } from '../types';
 
 const GENRES = ['All', 'Fantasy', 'Romance', 'Mystery', 'Sci-Fi', 'Horror', 'Adventure', 'Historical', 'Thriller'];
 
-// بيانات وهمية للـ Hero Banner
 const FEATURED = [
-  { id: 0, title: "Heir of the Shattered Stars", author: "Sara Al-Ghalib", genre: "Fantasy", emoji: "⭐", reads: "2.4M", rating: 4.9, c1: "#4c1d95", c2: "#be185d" },
-  { id: 2, title: "The Last String", author: "Lina Haddad", genre: "Romance", emoji: "🎵", reads: "3.1M", rating: 4.8, c1: "#9d174d", c2: "#7c3aed" },
-  { id: 6, title: "Phoenix Protocol", author: "James Whitmore", genre: "Sci-Fi", emoji: "🔥", reads: "1.8M", rating: 4.8, c1: "#92400e", c2: "#991b1b" },
+  { id: '1', title: "Heir of the Shattered Stars", author: "Sara Al-Ghalib", genre: "Fantasy", emoji: "⭐", reads: "2.4M", rating: 4.9, c1: "#4c1d95", c2: "#be185d" },
+  { id: '2', title: "The Last String", author: "Lina Haddad", genre: "Romance", emoji: "🎵", reads: "3.1M", rating: 4.8, c1: "#9d174d", c2: "#7c3aed" },
+  { id: '3', title: "Blue Code 2087", author: "Mazen Al-Rashid", genre: "Sci-Fi", emoji: "💻", reads: "1.2M", rating: 4.6, c1: "#1e3a8a", c2: "#6d28d9" },
 ];
 
 export default function DiscoverPage() {
@@ -76,7 +75,6 @@ export default function DiscoverPage() {
 
   return (
     <div className="min-h-screen bg-[var(--void)] text-[var(--txt)] transition-colors">
-      {/* التبويبات العلوية */}
       <div className="sticky top-14 z-30 bg-[var(--void)]/95 backdrop-blur-2xl border-b border-[var(--b2)]">
         <div className="flex overflow-x-auto scrollbar-hide">
           {[
@@ -102,7 +100,6 @@ export default function DiscoverPage() {
       </div>
 
       <div className="flex-1 overflow-y-auto pb-20" ref={feedRef}>
-        {/* Hero Banner */}
         <div
           onClick={() => navigate(`/novel/${hero.id}`)}
           className="relative m-3 h-[226px] rounded-3xl overflow-hidden cursor-pointer shadow-2xl group"
@@ -125,7 +122,6 @@ export default function DiscoverPage() {
           </div>
         </div>
 
-        {/* نقاط التنقل بين الـ Hero */}
         <div className="flex justify-center gap-1.5 -mt-2 mb-2">
           {FEATURED.map((_, i) => (
             <button
@@ -138,12 +134,11 @@ export default function DiscoverPage() {
           ))}
         </div>
 
-        {/* شريط التصنيفات */}
         <div className="flex gap-2 overflow-x-auto px-4 py-3 scrollbar-hide">
           {GENRES.map((genre) => (
             <button
               key={genre}
-              onClick={() => { setActiveGenre(genre); }}
+              onClick={() => setActiveGenre(genre)}
               className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
                 activeGenre === genre
                   ? 'bg-[var(--v)] border-[var(--v)] text-white'
@@ -155,7 +150,6 @@ export default function DiscoverPage() {
           ))}
         </div>
 
-        {/* قائمة الروايات */}
         <div className="px-3 space-y-2">
           {isLoading ? (
             <LoadingSpinner className="py-12" />
@@ -164,10 +158,7 @@ export default function DiscoverPage() {
               title="No novels found"
               description="Try adjusting your filters or check back later."
               action={
-                <button
-                  onClick={() => { setActiveGenre('All'); }}
-                  className="mt-4 px-4 py-2 bg-[var(--v)] text-white rounded-full text-sm font-semibold"
-                >
+                <button onClick={() => setActiveGenre('All')} className="mt-4 px-4 py-2 bg-[var(--v)] text-white rounded-full text-sm font-semibold">
                   Clear Filters
                 </button>
               }
