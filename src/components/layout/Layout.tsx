@@ -11,9 +11,6 @@ export default function Layout() {
   const location = useLocation();
   const { user } = useAuth();
 
-  const closeSidebar = () => setSidebarOpen(false);
-  const openSidebar = () => setSidebarOpen(true);
-
   const menuItems = [
     { path: '/search', label: 'Search', icon: Search },
     { path: '/wallet', label: 'Wallet', icon: Wallet },
@@ -27,34 +24,29 @@ export default function Layout() {
 
   return (
     <div className="min-h-screen bg-[var(--void)] text-[var(--txt)] transition-colors relative">
-      <TopBar onMenuToggle={openSidebar} />
+      <TopBar onMenuToggle={() => setSidebarOpen(true)} />
 
-      {/* القائمة الجانبية */}
       {sidebarOpen && (
         <>
-          {/* خلفية معتمة */}
           <div
             className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 transition-opacity"
-            onClick={closeSidebar}
+            onClick={() => setSidebarOpen(false)}
           />
-          {/* لوحة القائمة */}
-          <div className="fixed top-0 left-0 h-full w-72 max-w-[85vw] bg-[var(--surface)] border-r border-[var(--b2)] shadow-2xl z-50 overflow-y-auto animate-slide-in">
+          <div className="fixed top-0 left-0 h-full w-72 max-w-[85vw] bg-[var(--surface)] border-r border-[var(--b2)] shadow-2xl z-50 overflow-y-auto">
             <div className="p-5 border-b border-[var(--b2)] flex items-center justify-between">
               <h2 className="text-lg font-bold text-[var(--txt)]">Menu</h2>
-              <button onClick={closeSidebar} className="p-1.5 rounded-full hover:bg-[var(--surface2)] transition-colors text-[var(--txt2)]">
+              <button onClick={() => setSidebarOpen(false)} className="p-1.5 rounded-full hover:bg-[var(--surface2)] text-[var(--txt2)]">
                 <X className="w-5 h-5" />
               </button>
             </div>
-
             <div className="p-3 space-y-1">
               {menuItems.map((item) => {
-                const isActive = location.pathname === item.path || 
-                  (item.path !== '/' && location.pathname.startsWith(item.path));
+                const isActive = location.pathname === item.path || location.pathname.startsWith(item.path);
                 const Icon = item.icon;
                 return (
                   <button
                     key={item.path}
-                    onClick={() => { navigate(item.path); closeSidebar(); }}
+                    onClick={() => { navigate(item.path); setSidebarOpen(false); }}
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-left ${
                       isActive
                         ? 'bg-[var(--b1)] text-[var(--vb)]'
@@ -67,33 +59,21 @@ export default function Layout() {
                 );
               })}
             </div>
-
             <div className="border-t border-[var(--b2)] p-3 mt-auto">
-              <button
-                onClick={() => { navigate('/profile'); closeSidebar(); }}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-[var(--surface2)] transition-colors text-[var(--txt2)] hover:text-[var(--txt)]"
-              >
-                <User className="w-5 h-5" />
-                <span className="text-sm font-medium">Profile</span>
+              <button onClick={() => { navigate('/profile'); setSidebarOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[var(--txt2)] hover:bg-[var(--surface2)] hover:text-[var(--txt)] transition-colors">
+                <User className="w-5 h-5" /> <span className="text-sm font-medium">Profile</span>
               </button>
-              <button
-                onClick={() => { navigate('/settings'); closeSidebar(); }}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-[var(--surface2)] transition-colors text-[var(--txt2)] hover:text-[var(--txt)]"
-              >
-                <Settings className="w-5 h-5" />
-                <span className="text-sm font-medium">Settings</span>
+              <button onClick={() => { navigate('/settings'); setSidebarOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[var(--txt2)] hover:bg-[var(--surface2)] hover:text-[var(--txt)] transition-colors">
+                <Settings className="w-5 h-5" /> <span className="text-sm font-medium">Settings</span>
               </button>
             </div>
           </div>
         </>
       )}
 
-      {/* المحتوى الرئيسي */}
       <main className="pb-20">
         <Outlet />
       </main>
-
-      {/* شريط التنقل السفلي */}
       <BottomNav />
     </div>
   );
