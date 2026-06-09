@@ -36,34 +36,6 @@ export function calculateReadingTime(wordCount: number): string {
 }
 
 export const GENRES = [
-  'Fantasy',
-  'Romance',
-  'Sci-Fi',
-  'Mystery',
-  'Horror',
-  'Adventure',
-  'Comedy',
-  'Drama',
-  'Action',
-  'Thriller',
-  'Slice of Life',
-  'Historical',
-  'Supernatural',
-  'Psychological',
-  'Mecha',
-  'Isekai',
+  'Fantasy', 'Romance', 'Sci-Fi', 'Mystery', 'Horror',
+  'Adventure', 'Comedy', 'Drama', 'Action', 'Thriller',
 ];
-
-export const STATUS_COLORS = {
-  ongoing: 'bg-green-100 text-green-700',
-  completed: 'bg-blue-100 text-blue-700',
-  hiatus: 'bg-yellow-100 text-yellow-700',
-  dropped: 'bg-red-100 text-red-700',
-} as const;
-
-export const LIBRARY_TABS = {
-  reading: { label: 'Reading', icon: 'BookOpen', color: 'text-blue-600' },
-  completed: { label: 'Completed', icon: 'CheckCircle', color: 'text-green-600' },
-  dropped: { label: 'Dropped', icon: 'XCircle', color: 'text-red-600' },
-  planned: { label: 'Planned', icon: 'Clock', color: 'text-purple-600' },
-} as const;
