@@ -27,6 +27,7 @@ import AuthorPage from './pages/AuthorPage';
 import SettingsPage from './pages/SettingsPage';
 import AccountSettingsPage from './pages/AccountSettingsPage';
 import ReadingPreferencesPage from './pages/ReadingPreferencesPage';
+import ChooseHousePage from './pages/ChooseHousePage';
 
 function App() {
   return (
@@ -58,6 +59,7 @@ function App() {
                 <Route path="settings" element={<SettingsPage />} />
                 <Route path="settings/account" element={<AccountSettingsPage />} />
                 <Route path="settings/reading" element={<ReadingPreferencesPage />} />
+                <Route path="choose-house" element={<ChooseHousePage />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Route>
             </Routes>
