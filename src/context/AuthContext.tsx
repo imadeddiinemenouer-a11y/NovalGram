@@ -17,6 +17,7 @@ const USER_KEY = 'novelgram_user';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<Profile | null>(() => {
+    // استعادة سريعة من localStorage لتفادي شاشة بيضاء
     try {
       const stored = localStorage.getItem(USER_KEY);
       return stored ? JSON.parse(stored) : null;
@@ -26,41 +27,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
   const [isLoading, setIsLoading] = useState(true);
 
+  // مستمع لـ Supabase Auth
   useEffect(() => {
-    checkUser();
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
         const profile = await getCurrentUser();
         setUser(profile);
+        if (profile) localStorage.setItem(USER_KEY, JSON.stringify(profile));
       } else {
         setUser(null);
+        localStorage.removeItem(USER_KEY);
       }
       setIsLoading(false);
     });
+
+    // فحص أولي
+    checkUser();
+
     return () => subscription.unsubscribe();
   }, []);
-
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem(USER_KEY, JSON.stringify(user));
-    } else {
-      localStorage.removeItem(USER_KEY);
-    }
-  }, [user]);
 
   async function checkUser() {
     try {
       const profile = await getCurrentUser();
       setUser(profile);
+      if (profile) localStorage.setItem(USER_KEY, JSON.stringify(profile));
     } catch (error) {
-      console.error('Error checking user:', error);
+      console.error('Auth check failed:', error);
+      setUser(null);
     } finally {
       setIsLoading(false);
     }
   }
 
   const updateUser = (updates: Partial<Profile>) => {
-    setUser(prev => prev ? { ...prev, ...updates } : null);
+    setUser(prev => {
+      if (!prev) return null;
+      const updated = { ...prev, ...updates };
+      localStorage.setItem(USER_KEY, JSON.stringify(updated));
+      return updated;
+    });
   };
 
   async function signUp(email: string, password: string, username: string) {
@@ -68,13 +74,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (authError) throw authError;
 
     if (authData.user) {
-      await supabase.from('profiles').insert({
-        id: authData.user.id,
-        username,
-        role: 'reader',
-      });
+      await supabase.from('profiles').insert({ id: authData.user.id, username, role: 'reader' });
       const profile = await getCurrentUser();
       setUser(profile);
+      if (profile) localStorage.setItem(USER_KEY, JSON.stringify(profile));
     }
   }
 
@@ -85,12 +88,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (data.user) {
       const profile = await getCurrentUser();
       setUser(profile);
+      if (profile) localStorage.setItem(USER_KEY, JSON.stringify(profile));
     }
   }
 
   async function signOut() {
     await supabase.auth.signOut();
     setUser(null);
+    localStorage.removeItem(USER_KEY);
   }
 
   async function refreshUser() {
@@ -106,8 +111,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth() {
   const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
+  if (context === undefined) throw new Error('useAuth must be used within an AuthProvider');
   return context;
 }
