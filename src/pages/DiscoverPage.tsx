@@ -1,164 +1,185 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, TrendingUp, Star, Compass, Sparkles, Filter, ChevronRight, BookOpen } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 import { getNovels } from '../utils/api';
+import NovelCard from '../components/novels/NovelCard';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import EmptyState from '../components/common/EmptyState';
 import type { Novel } from '../types';
 
-const GENRE_LIST = ['All', 'Fantasy', 'Romance', 'Sci-Fi', 'Mystery', 'Horror', 'Comedy'];
+const GENRES = ['All', 'Fantasy', 'Romance', 'Mystery', 'Sci-Fi', 'Horror', 'Adventure', 'Historical', 'Thriller'];
+
+// بيانات وهمية للـ Hero Banner
+const FEATURED = [
+  { id: 0, title: "Heir of the Shattered Stars", author: "Sara Al-Ghalib", genre: "Fantasy", emoji: "⭐", reads: "2.4M", rating: 4.9, c1: "#4c1d95", c2: "#be185d" },
+  { id: 2, title: "The Last String", author: "Lina Haddad", genre: "Romance", emoji: "🎵", reads: "3.1M", rating: 4.8, c1: "#9d174d", c2: "#7c3aed" },
+  { id: 6, title: "Phoenix Protocol", author: "James Whitmore", genre: "Sci-Fi", emoji: "🔥", reads: "1.8M", rating: 4.8, c1: "#92400e", c2: "#991b1b" },
+];
 
 export default function DiscoverPage() {
   const navigate = useNavigate();
+  const { theme } = useTheme();
+  const feedRef = useRef<HTMLDivElement>(null);
+
   const [novels, setNovels] = useState<Novel[]>([]);
   const [filteredNovels, setFilteredNovels] = useState<Novel[]>([]);
   const [activeGenre, setActiveGenre] = useState('All');
-  const [activeSort, setActiveSort] = useState<'trending' | 'new' | 'rating'>('trending');
+  const [activeTab, setActiveTab] = useState('all');
   const [isLoading, setIsLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [heroIdx, setHeroIdx] = useState(0);
 
   useEffect(() => {
     loadNovels();
-  }, [activeSort, activeGenre]);
+  }, [activeGenre]);
 
   useEffect(() => {
-    if (searchQuery.trim() === '') {
-      setFilteredNovels(novels);
-    } else {
-      const q = searchQuery.toLowerCase();
-      setFilteredNovels(
-        novels.filter(n =>
-          n.title.toLowerCase().includes(q) ||
-          n.author?.username?.toLowerCase().includes(q) ||
-          n.genre?.some(g => g.toLowerCase().includes(q))
-        )
-      );
-    }
-  }, [searchQuery, novels]);
+    const timer = setInterval(() => {
+      setHeroIdx(prev => (prev + 1) % FEATURED.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
 
   async function loadNovels() {
-    setIsLoading(true);
     try {
+      setIsLoading(true);
       const data = await getNovels({
         genre: activeGenre === 'All' ? undefined : activeGenre,
-        sort: activeSort,
+        sort: 'trending',
       });
       setNovels(data || []);
-      setFilteredNovels(data || []);
-    } catch (err) {
-      console.error(err);
+      applyFilter(data || [], activeTab);
+    } catch (error) {
+      console.error('Error loading novels:', error);
     } finally {
       setIsLoading(false);
     }
   }
 
-  return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-white transition-colors">
-      {/* Header بسيط */}
-      <div className="sticky top-0 z-30 bg-white/90 dark:bg-gray-950/90 backdrop-blur-xl border-b border-gray-100 dark:border-gray-800 px-4 py-4">
-        <div className="flex items-center justify-between max-w-4xl mx-auto">
-          <h1 className="text-2xl font-extrabold tracking-tight text-indigo-600 dark:text-white flex items-center gap-2">
-            <Compass className="w-6 h-6" /> Discover
-          </h1>
-          <button
-            onClick={() => navigate('/search')}
-            className="p-2 bg-gray-100 dark:bg-gray-800 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-          >
-            <Search className="w-5 h-5 text-gray-500 dark:text-gray-300" />
-          </button>
-        </div>
+  function applyFilter(list: Novel[], tab: string) {
+    if (tab === 'rank') {
+      setFilteredNovels([...list].sort((a, b) => (b.views || 0) - (a.views || 0)));
+    } else if (tab === 'new') {
+      setFilteredNovels([...list].reverse());
+    } else if (tab === 'following') {
+      setFilteredNovels(list.filter(n => (n as any).progress > 0));
+    } else {
+      setFilteredNovels(list);
+    }
+  }
 
-        {/* شريط الفلتر السريع */}
-        <div className="max-w-4xl mx-auto mt-4 flex gap-2 overflow-x-auto scrollbar-hide">
-          {['trending', 'new', 'rating'].map((sort) => (
+  function handleTabChange(tab: string) {
+    setActiveTab(tab);
+    applyFilter(novels, tab);
+  }
+
+  const hero = FEATURED[heroIdx % FEATURED.length];
+
+  return (
+    <div className="min-h-screen bg-[var(--void)] text-[var(--txt)] transition-colors">
+      {/* التبويبات العلوية */}
+      <div className="sticky top-14 z-30 bg-[var(--void)]/95 backdrop-blur-2xl border-b border-[var(--b2)]">
+        <div className="flex overflow-x-auto scrollbar-hide">
+          {[
+            { id: 'all', label: 'For You' },
+            { id: 'following', label: 'Following' },
+            { id: 'hot', label: '🔥 Hot' },
+            { id: 'new', label: '✨ New' },
+            { id: 'rank', label: '🏆 Top' },
+          ].map((tab) => (
             <button
-              key={sort}
-              onClick={() => setActiveSort(sort as any)}
-              className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
-                activeSort === sort
-                  ? 'bg-indigo-600 dark:bg-red-600 text-white'
-                  : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300'
+              key={tab.id}
+              onClick={() => handleTabChange(tab.id)}
+              className={`flex-shrink-0 px-4 py-3 text-sm font-semibold border-b-2 transition-all ${
+                activeTab === tab.id
+                  ? 'border-[var(--vb)] text-[var(--vb)]'
+                  : 'border-transparent text-[var(--txt3)] hover:text-[var(--txt2)]'
               }`}
             >
-              {sort === 'trending' && <TrendingUp className="w-3.5 h-3.5 inline mr-1" />}
-              {sort === 'new' && <Sparkles className="w-3.5 h-3.5 inline mr-1" />}
-              {sort === 'rating' && <Star className="w-3.5 h-3.5 inline mr-1" />}
-              {sort.charAt(0).toUpperCase() + sort.slice(1)}
+              {tab.label}
             </button>
           ))}
-          <div className="w-px bg-gray-200 dark:bg-gray-700 mx-1" />
-          {GENRE_LIST.map((genre) => (
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto pb-20" ref={feedRef}>
+        {/* Hero Banner */}
+        <div
+          onClick={() => navigate(`/novel/${hero.id}`)}
+          className="relative m-3 h-[226px] rounded-3xl overflow-hidden cursor-pointer shadow-2xl group"
+          style={{ background: `linear-gradient(135deg, ${hero.c1}44, ${hero.c2}22)` }}
+        >
+          <div className="absolute inset-0 flex items-center justify-center text-7xl" style={{ filter: `drop-shadow(0 0 16px ${hero.c1})` }}>
+            {hero.emoji}
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-[var(--void)]/98 via-[var(--void)]/25 to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 p-4">
+            <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gradient-to-r from-[var(--v)] to-[var(--mg)] text-white text-xs font-bold uppercase tracking-wider mb-2">
+              ⭐ {hero.genre}
+            </div>
+            <h2 className="font-serif text-2xl font-bold leading-tight mb-1">{hero.title}</h2>
+            <div className="flex items-center gap-2 text-xs text-white/60">
+              <span>✍️ {hero.author}</span>
+              <span>👁️ {hero.reads}</span>
+              <span>⭐ {hero.rating}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* نقاط التنقل بين الـ Hero */}
+        <div className="flex justify-center gap-1.5 -mt-2 mb-2">
+          {FEATURED.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setHeroIdx(i)}
+              className={`w-1.5 h-1.5 rounded-full transition-all ${
+                i === heroIdx % FEATURED.length ? 'w-5 bg-[var(--vb)]' : 'bg-[var(--surface3)]'
+              }`}
+            />
+          ))}
+        </div>
+
+        {/* شريط التصنيفات */}
+        <div className="flex gap-2 overflow-x-auto px-4 py-3 scrollbar-hide">
+          {GENRES.map((genre) => (
             <button
               key={genre}
-              onClick={() => setActiveGenre(genre)}
-              className={`px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
+              onClick={() => { setActiveGenre(genre); }}
+              className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
                 activeGenre === genre
-                  ? 'bg-gray-900 dark:bg-white text-white dark:text-black'
-                  : 'bg-gray-100 dark:bg-gray-800 text-gray-500'
+                  ? 'bg-[var(--v)] border-[var(--v)] text-white'
+                  : 'bg-[var(--surface2)] border-[var(--b2)] text-[var(--txt3)] hover:border-[var(--vb)]'
               }`}
             >
               {genre}
             </button>
           ))}
         </div>
-      </div>
 
-      {/* المحتوى الرئيسي: شبكة بطاقات أفقية بأسلوب Wattpad */}
-      <div className="max-w-4xl mx-auto px-4 py-6">
-        {isLoading ? (
-          <LoadingSpinner className="py-12" />
-        ) : filteredNovels.length === 0 ? (
-          <EmptyState
-            title="No novels found"
-            description="Try adjusting your filters"
-            action={
-              <button
-                onClick={() => { setActiveGenre('All'); setActiveSort('trending'); }}
-                className="mt-4 px-4 py-2 bg-indigo-600 dark:bg-red-600 text-white rounded-lg"
-              >
-                Clear Filters
-              </button>
-            }
-          />
-        ) : (
-          <div className="space-y-4">
-            {filteredNovels.map((novel) => (
-              <div
-                key={novel.id}
-                onClick={() => navigate(`/novel/${novel.id}`)}
-                className="flex gap-4 bg-gray-50 dark:bg-gray-900 rounded-2xl p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group border border-transparent hover:border-indigo-100 dark:hover:border-gray-700"
-              >
-                {/* الغلاف */}
-                <img
-                  src={novel.cover_image || 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=200&h=300&fit=crop'}
-                  alt={novel.title}
-                  className="w-20 h-28 object-cover rounded-xl shadow-md flex-shrink-0 group-hover:scale-105 transition-transform"
-                />
-                {/* المعلومات */}
-                <div className="flex-1 min-w-0 flex flex-col justify-between">
-                  <div>
-                    <h3 className="font-bold text-base line-clamp-2 group-hover:text-indigo-600 dark:group-hover:text-red-400 transition-colors">
-                      {novel.title}
-                    </h3>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      by {novel.author?.display_name || novel.author?.username || 'Unknown'}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-3 text-xs text-gray-400 dark:text-gray-500 mt-2">
-                    <span className="flex items-center gap-1"><Star className="w-3 h-3 text-yellow-500 fill-yellow-500" /> {novel.rating || '0.0'}</span>
-                    <span className="flex items-center gap-1"><BookOpen className="w-3 h-3" /> {novel.word_count || 0}</span>
-                    <span className="bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded-full text-[10px] capitalize">{novel.status}</span>
-                  </div>
-                  {/* شريط تقدم صغير */}
-                  <div className="w-full bg-gray-200 dark:bg-gray-800 rounded-full h-1 mt-2">
-                    <div className="bg-indigo-500 dark:bg-red-500 h-1 rounded-full" style={{ width: '30%' }} />
-                  </div>
-                </div>
-                <ChevronRight className="w-5 h-5 text-gray-300 dark:text-gray-600 self-center" />
+        {/* قائمة الروايات */}
+        <div className="px-3 space-y-2">
+          {isLoading ? (
+            <LoadingSpinner className="py-12" />
+          ) : filteredNovels.length === 0 ? (
+            <EmptyState
+              title="No novels found"
+              description="Try adjusting your filters or check back later."
+              action={
+                <button
+                  onClick={() => { setActiveGenre('All'); }}
+                  className="mt-4 px-4 py-2 bg-[var(--v)] text-white rounded-full text-sm font-semibold"
+                >
+                  Clear Filters
+                </button>
+              }
+            />
+          ) : (
+            filteredNovels.map((novel, index) => (
+              <div key={novel.id} style={{ animationDelay: `${index * 0.05}s` }} className="animate-fade-in">
+                <NovelCard novel={novel} />
               </div>
-            ))}
-          </div>
-        )}
+            ))
+          )}
+        </div>
       </div>
     </div>
   );
