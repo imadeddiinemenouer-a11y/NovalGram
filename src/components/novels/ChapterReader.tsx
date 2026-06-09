@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
-import { useAuth } from '../../context/AuthContext';
-import { getChapterById, addToLibrary } from '../../utils/api';
+import { getChapterById } from '../../utils/api';
 import { calculateReadingTime } from '../../utils/helpers';
 import CommentSection from './CommentSection';
 import LoadingSpinner from '../common/LoadingSpinner';
@@ -18,13 +17,11 @@ const READER_THEMES: Record<string, { bg: string; fg: string }> = {
 export default function ChapterReader() {
   const { chapterId } = useParams<{ chapterId: string }>();
   const navigate = useNavigate();
-  const { theme, fontSize, setFontSize } = useTheme();
-  const { user } = useAuth();
+  const { fontSize, setFontSize } = useTheme();
 
   const [chapter, setChapter] = useState<Chapter | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isLiked, setIsLiked] = useState(false);
-  const [isInLibrary, setIsInLibrary] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [readerTheme, setReaderTheme] = useState<'dark' | 'sepia' | 'light' | 'blue'>('dark');
@@ -64,55 +61,29 @@ export default function ChapterReader() {
 
   return (
     <div className="min-h-screen bg-[var(--void)] text-[var(--txt)] flex flex-col">
-      {/* Top Bar */}
       <div className="flex items-center gap-3 px-4 py-3 bg-[var(--void)]/95 backdrop-blur-2xl border-b border-[var(--b2)] flex-shrink-0 z-20">
-        <button
-          onClick={() => navigate(-1)}
-          className="w-9 h-9 flex items-center justify-center rounded-full bg-[var(--surface2)] text-[var(--txt2)] hover:text-[var(--txt)] transition-colors"
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="18" height="18">
-            <path d="m15 18-6-6 6-6" />
-          </svg>
+        <button onClick={() => navigate(-1)} className="w-9 h-9 flex items-center justify-center rounded-full bg-[var(--surface2)] text-[var(--txt2)] hover:text-[var(--txt)] transition-colors">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="18" height="18"><path d="m15 18-6-6 6-6"/></svg>
         </button>
         <div className="flex-1 min-w-0">
           <h3 className="text-sm font-bold truncate">{chapter.title}</h3>
           <p className="text-[10px] text-[var(--txt3)]">Chapter {chapter.chapter_number} · {calculateReadingTime(chapter.word_count || 0)}</p>
         </div>
-        <div className="flex items-center gap-1">
-          <button
-            onClick={() => setIsLiked(!isLiked)}
-            className="w-9 h-9 flex items-center justify-center rounded-full bg-[var(--surface2)] text-[var(--txt2)] hover:text-[var(--txt)] transition-colors"
-          >
-            <svg viewBox="0 0 24 24" width="16" height="16" fill={isLiked ? '#db2777' : 'none'} stroke="currentColor" strokeWidth="2.5">
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-            </svg>
-          </button>
-          <button
-            onClick={() => setShowComments(!showComments)}
-            className="w-9 h-9 flex items-center justify-center rounded-full bg-[var(--surface2)] text-[var(--txt2)] hover:text-[var(--txt)] transition-colors"
-          >
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-            </svg>
-          </button>
-          <button
-            onClick={() => setShowSettings(!showSettings)}
-            className="w-9 h-9 flex items-center justify-center rounded-full bg-[var(--surface2)] text-[var(--txt2)] hover:text-[var(--txt)] transition-colors"
-          >
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <circle cx="12" cy="12" r="3" />
-              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-            </svg>
-          </button>
-        </div>
+        <button onClick={() => setIsLiked(!isLiked)} className="w-9 h-9 flex items-center justify-center rounded-full bg-[var(--surface2)] text-[var(--txt2)] hover:text-[var(--txt)] transition-colors">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill={isLiked ? '#db2777' : 'none'} stroke="currentColor" strokeWidth="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </button>
+        <button onClick={() => setShowComments(!showComments)} className="w-9 h-9 flex items-center justify-center rounded-full bg-[var(--surface2)] text-[var(--txt2)] hover:text-[var(--txt)] transition-colors">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </button>
+        <button onClick={() => setShowSettings(!showSettings)} className="w-9 h-9 flex items-center justify-center rounded-full bg-[var(--surface2)] text-[var(--txt2)] hover:text-[var(--txt)] transition-colors">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
       </div>
 
-      {/* Progress bar */}
       <div className="h-0.5 bg-[var(--surface3)] flex-shrink-0">
         <div className="h-full bg-gradient-to-r from-[var(--v)] to-[var(--mg)] transition-all" style={{ width: `${progress}%` }} />
       </div>
 
-      {/* Settings panel */}
       {showSettings && (
         <div className="bg-[var(--surface2)] border-b border-[var(--b2)] px-4 py-3 space-y-3 animate-fade-in">
           <div className="flex items-center justify-between">
@@ -138,9 +109,7 @@ export default function ChapterReader() {
                 <button
                   key={t}
                   onClick={() => setReaderTheme(t as any)}
-                  className={`w-6 h-6 rounded-full border-2 transition-all ${
-                    readerTheme === t ? 'border-[var(--vb)]' : 'border-transparent'
-                  }`}
+                  className={`w-6 h-6 rounded-full border-2 transition-all ${readerTheme === t ? 'border-[var(--vb)]' : 'border-transparent'}`}
                   style={{ background: READER_THEMES[t].bg }}
                 />
               ))}
@@ -149,7 +118,6 @@ export default function ChapterReader() {
         </div>
       )}
 
-      {/* Chapter Content */}
       <div
         ref={bodyRef}
         onScroll={handleScroll}
@@ -166,20 +134,11 @@ export default function ChapterReader() {
           <span>⏱️ {calculateReadingTime(chapter.word_count || 0)}</span>
           <span>👁️ {chapter.views || 0} views</span>
         </div>
-        <div
-          className="font-serif text-lg leading-relaxed space-y-4"
-          style={{ fontSize: `${fontSize}px`, lineHeight: lineHeight }}
-        >
-          {(chapter.content || '')
-            .split('\n\n')
-            .map((paragraph, i) => (
-              <p key={i} className="cursor-pointer rounded-md px-0.5 -mx-0.5 transition-colors hover:bg-[var(--b1)]">
-                {paragraph}
-              </p>
-            ))}
+        <div className="font-serif text-lg leading-relaxed space-y-4" style={{ fontSize: `${fontSize}px`, lineHeight: lineHeight }}>
+          {(chapter.content || 'This is mock chapter content.\n\nIt has multiple paragraphs.\n\nEnjoy reading!').split('\n\n').map((paragraph, i) => (
+            <p key={i} className="cursor-pointer rounded-md px-0.5 -mx-0.5 transition-colors hover:bg-[var(--b1)]">{paragraph}</p>
+          ))}
         </div>
-
-        {/* Comments */}
         {showComments && (
           <div className="mt-8 pt-6 border-t border-[var(--b2)]">
             <CommentSection chapterId={chapter.id} />
@@ -187,19 +146,9 @@ export default function ChapterReader() {
         )}
       </div>
 
-      {/* Bottom Navigation */}
       <div className="flex gap-2 px-4 py-3 bg-[var(--void)]/95 backdrop-blur-2xl border-t border-[var(--b2)] flex-shrink-0 z-20">
-        <button
-          className="flex-1 py-2.5 rounded-lg bg-[var(--surface3)] text-[var(--txt2)] text-sm font-bold hover:bg-[var(--surface2)] transition-colors"
-          onClick={() => navigate(-1)}
-        >
-          ‹ Previous
-        </button>
-        <button
-          className="flex-1 py-2.5 rounded-lg bg-gradient-to-r from-[var(--v)] to-[var(--mg)] text-white text-sm font-bold shadow-lg shadow-[var(--v)]/30"
-        >
-          Next ›
-        </button>
+        <button className="flex-1 py-2.5 rounded-lg bg-[var(--surface3)] text-[var(--txt2)] text-sm font-bold hover:bg-[var(--surface2)] transition-colors">‹ Previous</button>
+        <button className="flex-1 py-2.5 rounded-lg bg-gradient-to-r from-[var(--v)] to-[var(--mg)] text-white text-sm font-bold shadow-lg shadow-[var(--v)]/30">Next ›</button>
       </div>
     </div>
   );
