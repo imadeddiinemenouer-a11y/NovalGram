@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ===== متغيرات التصميم (الوضع الداكن افتراضيًا) ===== */
 :root {
   --void: #05050a;
   --surface: #0d0d15;
@@ -25,10 +26,79 @@
   --font-sans: 'Inter', system-ui, sans-serif;
 }
 
+/* ===== الوضع النهاري ===== */
+.light {
+  --void: #f5f0e8;
+  --surface: #ffffff;
+  --surface2: #f3f0ff;
+  --surface3: #e5e7eb;
+  --txt: #1e1b4b;
+  --txt2: #4b5563;
+  --txt3: #6b7280;
+  --b1: rgba(109, 40, 217, 0.15);
+  --b2: rgba(0, 0, 0, 0.06);
+}
+
+/* ===== الأساسيات ===== */
 body {
   background-color: var(--void);
   color: var(--txt);
   font-family: var(--font-sans);
   -webkit-tap-highlight-color: transparent;
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+::-webkit-scrollbar {
+  width: 2px;
+  height: 2px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--v);
+  border-radius: 99px;
+}
+
+/* ===== حركات ===== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fadeIn 0.3s ease both;
+}
+
+/* ===== مكونات قابلة لإعادة الاستخدام ===== */
+@layer components {
+  .btn-primary {
+    @apply flex items-center justify-center gap-2 px-4 py-2.5 rounded-full font-semibold text-sm transition-all;
+    background: linear-gradient(135deg, var(--v), var(--mg));
+    color: white;
+    box-shadow: 0 4px 12px rgba(109, 40, 217, 0.4);
+  }
+  .btn-primary:active {
+    transform: scale(0.97);
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--b2);
+    border-radius: var(--r);
+    transition: transform 0.2s ease, border-color 0.2s;
+  }
+  .card:active {
+    transform: scale(0.98);
+    border-color: var(--b1);
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all;
+    background: var(--surface2);
+    border-color: var(--b2);
+    color: var(--txt3);
+  }
+  .chip.active {
+    background: var(--v);
+    border-color: var(--v);
+    color: white;
+  }
 }
