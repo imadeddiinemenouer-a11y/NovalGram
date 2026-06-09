@@ -102,3 +102,17 @@ body {
     color: white;
   }
 }
+/* تحسين تباين النصوص للوصول */
+.text-muted {
+  color: #a3a3aa !important; /* أغمق قليلاً من --txt3 لتتباين بشكل أفضل */
+}
+
+button, a, [role="button"] {
+  cursor: pointer;
+}
+
+/* التركيز على الأزرار لسهولة التصفح بلوحة المفاتيح */
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
+  outline: 2px solid var(--vb);
+  outline-offset: 2px;
+}
