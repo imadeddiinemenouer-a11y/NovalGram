@@ -12,19 +12,12 @@ export default function ChapterPage() {
 
   if (!chapterId) {
     return (
-      <div className={`min-h-screen flex flex-col items-center justify-center ${isDark ? 'bg-gray-950 text-gray-400' : 'bg-gray-50 text-gray-500'}`}>
+      <div className={`min-h-screen flex flex-col items-center justify-center ${isDark ? 'bg-[var(--void)] text-[var(--txt2)]' : 'bg-gray-50 text-gray-500'}`}>
         <p className="text-lg mb-4">Chapter not found</p>
-        <button
-          onClick={() => navigate(-1)}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-colors ${
-            isDark ? 'bg-gray-800 hover:bg-gray-700' : 'bg-gray-200 hover:bg-gray-300'
-          }`}
-        >
-          <ArrowLeft className="w-4 h-4" /> Go Back
-        </button>
+        <button onClick={() => navigate(-1)} className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-colors ${isDark ? 'bg-[var(--surface2)] hover:bg-[var(--surface3)]' : 'bg-gray-200 hover:bg-gray-300'}`}><ArrowLeft className="w-4 h-4" /> Go Back</button>
       </div>
     );
   }
 
-  return <ChapterReader chapterId={chapterId} />;
+  return <ChapterReader />;
 }
