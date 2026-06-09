@@ -9,7 +9,7 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   refreshUser: () => Promise<void>;
-  updateUser: (updates: Partial<Profile>) => void; // <-- الجديد
+  updateUser: (updates: Partial<Profile>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -24,7 +24,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return null;
     }
   });
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    checkUser();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user) {
+        const profile = await getCurrentUser();
+        setUser(profile);
+      } else {
+        setUser(null);
+      }
+      setIsLoading(false);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -34,21 +48,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [user]);
 
-  function buildLocalUser(id: string, email?: string, username?: string): Profile {
-    const name = username || email?.split('@')[0] || 'user';
-    return {
-      id,
-      username: name,
-      display_name: name,
-      bio: null,
-      avatar_url: null,
-      role: 'reader',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    } as Profile;
+  async function checkUser() {
+    try {
+      const profile = await getCurrentUser();
+      setUser(profile);
+    } catch (error) {
+      console.error('Error checking user:', error);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
-  // الدالة الجديدة لتحديث بيانات المستخدم محلياً
   const updateUser = (updates: Partial<Profile>) => {
     setUser(prev => prev ? { ...prev, ...updates } : null);
   };
@@ -63,9 +73,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         username,
         role: 'reader',
       });
-      // نستخدم الاسم المُدخل الآن
-      const local = buildLocalUser(authData.user.id, authData.user.email, username);
-      setUser(local);
+      const profile = await getCurrentUser();
+      setUser(profile);
     }
   }
 
@@ -75,9 +84,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     if (data.user) {
       const profile = await getCurrentUser();
-      // إذا وجدنا بروفايل حقيقي نستخدمه، وإلا نصنع محلي بالإيميل
-      const finalUser = profile || buildLocalUser(data.user.id, data.user.email);
-      setUser(finalUser);
+      setUser(profile);
     }
   }
 
@@ -87,8 +94,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function refreshUser() {
-    const profile = await getCurrentUser();
-    if (profile) setUser(profile);
+    await checkUser();
   }
 
   return (
