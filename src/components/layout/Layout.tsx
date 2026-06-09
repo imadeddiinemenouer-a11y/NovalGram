@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { X, Wallet, ShoppingBag, PenTool, Search, Gift, Bookmark, Globe, User, Settings, Bell } from 'lucide-react';
+import { X, Wallet, ShoppingBag, PenTool, Search, Gift, Bookmark, Globe, User, Settings, Bell, Home } from 'lucide-react';
 import TopBar from './TopBar';
 import BottomNav from './BottomNav';
 import { useAuth } from '../../context/AuthContext';
@@ -17,6 +17,7 @@ export default function Layout() {
     { path: '/store', label: 'Feature Store', icon: ShoppingBag },
     { path: '/rewards', label: 'Earn NGC', icon: Gift },
     { path: '/bookmarks', label: 'Bookmarks', icon: Bookmark },
+    { path: '/choose-house', label: 'Choose House', icon: Home },
     { path: '/studio', label: 'Studio', icon: PenTool },
     { path: '/language/en', label: 'Languages', icon: Globe },
     { path: '/notifications', label: 'Notifications', icon: Bell },
