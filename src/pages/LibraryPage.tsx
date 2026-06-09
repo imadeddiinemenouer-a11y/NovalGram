@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, CheckCircle, XCircle, Clock, Bookmark, MoreVertical, Trash2 } from 'lucide-react';
+import { BookOpen, CheckCircle, XCircle, Bookmark, Trash2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { getLibrary, updateLibraryStatus, removeFromLibrary } from '../utils/api';
-import { formatNumber, formatDate } from '../utils/helpers';
+import { formatNumber } from '../utils/helpers';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import EmptyState from '../components/common/EmptyState';
 import type { LibraryItem } from '../types';
 
 const tabs = [
-  { id: 'reading', label: 'Reading', icon: BookOpen, color: 'text-[var(--teal)]', bg: 'bg-[var(--teal)]/10' },
-  { id: 'completed', label: 'Completed', icon: CheckCircle, color: 'text-[var(--green)]', bg: 'bg-[var(--green)]/10' },
-  { id: 'dropped', label: 'Dropped', icon: XCircle, color: 'text-[var(--red)]', bg: 'bg-[var(--red)]/10' },
-  { id: 'planned', label: 'Saved', icon: Bookmark, color: 'text-[var(--amber)]', bg: 'bg-[var(--amber)]/10' },
+  { id: 'reading', label: 'Reading', icon: BookOpen },
+  { id: 'completed', label: 'Completed', icon: CheckCircle },
+  { id: 'dropped', label: 'Dropped', icon: XCircle },
+  { id: 'planned', label: 'Saved', icon: Bookmark },
 ];
 
 export default function LibraryPage() {
@@ -43,17 +43,6 @@ export default function LibraryPage() {
     }
   }
 
-  async function handleStatusChange(itemId: string, newStatus: string) {
-    try {
-      await updateLibraryStatus(itemId, newStatus);
-      setLibrary(prev => prev.map(item =>
-        item.id === itemId ? { ...item, status: newStatus as any } : item
-      ));
-    } catch (error) {
-      console.error('Error updating status:', error);
-    }
-  }
-
   async function handleRemove(itemId: string) {
     try {
       await removeFromLibrary(itemId);
@@ -75,13 +64,7 @@ export default function LibraryPage() {
         <div className="text-center">
           <BookOpen className="w-16 h-16 mx-auto mb-4 text-[var(--txt3)]" />
           <h2 className={`text-xl font-semibold mb-2 ${isDark ? 'text-[var(--txt)]' : 'text-gray-900'}`}>Sign in to view your library</h2>
-          <p className="text-[var(--txt3)] mb-4">Keep track of your reading progress</p>
-          <button
-            onClick={() => navigate('/login')}
-            className="px-6 py-3 bg-gradient-to-r from-[var(--v)] to-[var(--mg)] text-white rounded-full font-semibold hover:opacity-90 transition-opacity"
-          >
-            Sign In
-          </button>
+          <button onClick={() => navigate('/login')} className="px-6 py-3 bg-gradient-to-r from-[var(--v)] to-[var(--mg)] text-white rounded-full font-semibold">Sign In</button>
         </div>
       </div>
     );
@@ -89,7 +72,6 @@ export default function LibraryPage() {
 
   return (
     <div className={`min-h-screen transition-colors ${isDark ? 'bg-[var(--void)] text-[var(--txt)]' : 'bg-gray-50 text-gray-900'}`}>
-      {/* Header & Tabs */}
       <div className={`sticky top-14 z-30 border-b ${isDark ? 'bg-[var(--void)]/95 backdrop-blur-2xl border-[var(--b2)]' : 'bg-white border-gray-200'}`}>
         <div className="max-w-4xl mx-auto px-4 py-4">
           <h1 className="text-2xl font-bold mb-4 font-serif">My Library</h1>
@@ -104,18 +86,12 @@ export default function LibraryPage() {
                   className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap text-sm font-semibold transition-all ${
                     activeTab === tab.id
                       ? 'bg-[var(--v)] text-white'
-                      : isDark
-                        ? 'bg-[var(--surface2)] text-[var(--txt3)] hover:bg-[var(--surface3)]'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      : isDark ? 'bg-[var(--surface2)] text-[var(--txt3)] hover:bg-[var(--surface3)]' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
                 >
-                  <Icon className={`w-4 h-4 ${activeTab === tab.id ? '' : tab.color}`} />
+                  <Icon className="w-4 h-4" />
                   {tab.label}
-                  <span className={`text-xs px-2 py-0.5 rounded-full ${
-                    activeTab === tab.id ? 'bg-white/20' : isDark ? 'bg-[var(--surface3)]' : 'bg-gray-200'
-                  }`}>
-                    {count}
-                  </span>
+                  <span className={`text-xs px-2 py-0.5 rounded-full ${activeTab === tab.id ? 'bg-white/20' : isDark ? 'bg-[var(--surface3)]' : 'bg-gray-200'}`}>{count}</span>
                 </button>
               );
             })}
@@ -123,92 +99,32 @@ export default function LibraryPage() {
         </div>
       </div>
 
-      {/* Content */}
       <div className="max-w-4xl mx-auto px-3 py-6">
         {isLoading ? (
           <LoadingSpinner className="py-12" />
         ) : filteredItems.length === 0 ? (
-          <EmptyState
-            icon={tabs.find(t => t.id === activeTab)?.icon}
-            title={`No ${activeTab} novels`}
-            description={`Novels you mark as ${activeTab} will appear here`}
-            action={
-              activeTab === 'reading' && (
-                <button
-                  onClick={() => navigate('/')}
-                  className="mt-4 px-4 py-2 bg-[var(--v)] text-white rounded-full text-sm font-semibold hover:opacity-90"
-                >
-                  Discover Novels
-                </button>
-              )
-            }
-          />
+          <EmptyState icon={tabs.find(t => t.id === activeTab)?.icon} title={`No ${activeTab} novels`} description={`Novels you mark as ${activeTab} will appear here`} />
         ) : (
           <div className="space-y-2">
             {filteredItems.map((item, index) => {
               const novel = item.novel;
               if (!novel) return null;
-
               const totalChapters = novel.word_count ? Math.ceil(novel.word_count / 2000) : 0;
               const progress = totalChapters > 0 ? Math.round((item.last_chapter_read / totalChapters) * 100) : 0;
-
               return (
-                <div
-                  key={item.id}
-                  onClick={() => navigate(`/novel/${novel.id}`)}
-                  className="card flex gap-3 p-3 cursor-pointer group animate-fade-in"
-                  style={{ animationDelay: `${index * 0.04}s` }}
-                >
-                  {/* Cover */}
-                  <div
-                    className="w-[62px] h-[84px] rounded-lg flex-shrink-0 overflow-hidden relative flex items-center justify-center text-3xl"
-                    style={{
-                      background: `linear-gradient(135deg, ${(novel as any).c1 || '#6d28d9'}55, ${(novel as any).c2 || '#db2777'}22)`,
-                    }}
-                  >
-                    {novel.cover_image ? (
-                      <img src={novel.cover_image} alt={novel.title} className="w-full h-full object-cover" />
-                    ) : (
-                      <span>{(novel as any).emoji || '📖'}</span>
-                    )}
+                <div key={item.id} onClick={() => navigate(`/novel/${novel.id}`)} className="card flex gap-3 p-3 cursor-pointer group animate-fade-in" style={{ animationDelay: `${index * 0.04}s` }}>
+                  <div className="w-[62px] h-[84px] rounded-lg flex-shrink-0 overflow-hidden relative flex items-center justify-center text-3xl" style={{ background: `linear-gradient(135deg, ${(novel as any).c1 || '#6d28d9'}55, ${(novel as any).c2 || '#db2777'}22)` }}>
+                    {novel.cover_image ? <img src={novel.cover_image} alt={novel.title} className="w-full h-full object-cover" /> : <span>📖</span>}
                   </div>
-
-                  {/* Info */}
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-bold truncate group-hover:text-[var(--vb)] transition-colors">
-                      {novel.title}
-                    </h3>
-                    <p className="text-[11px] text-[var(--txt3)] mb-2">
-                      {novel.author?.display_name || novel.author?.username || 'Unknown'}
-                    </p>
-                    <p className="text-[10px] text-[var(--txt3)] mb-2">
-                      Chapter {item.last_chapter_read} of {totalChapters || '?'}
-                    </p>
-
-                    {/* Progress */}
+                    <h3 className="text-sm font-bold truncate group-hover:text-[var(--vb)] transition-colors">{novel.title}</h3>
+                    <p className="text-[11px] text-[var(--txt3)] mb-2">{novel.author?.display_name || novel.author?.username || 'Unknown'}</p>
                     <div className="flex items-center gap-2">
-                      <div className="flex-1 h-1 bg-[var(--surface3)] rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-gradient-to-r from-[var(--v)] to-[var(--mg)] rounded-full transition-all"
-                          style={{ width: `${Math.min(progress, 100)}%` }}
-                        />
-                      </div>
+                      <div className="flex-1 h-1 bg-[var(--surface3)] rounded-full overflow-hidden"><div className="h-full bg-gradient-to-r from-[var(--v)] to-[var(--mg)] rounded-full transition-all" style={{ width: `${Math.min(progress, 100)}%` }} /></div>
                       <span className="text-[10px] text-[var(--txt3)]">{progress}%</span>
                     </div>
-
-                    {/* New chapter badge */}
-                    {(novel as any).hot && (
-                      <span className="inline-block mt-2 px-2 py-0.5 rounded-full text-[9px] font-bold bg-[rgba(219,39,119,0.18)] text-[var(--mg)]">
-                        🔔 New chapter available!
-                      </span>
-                    )}
                   </div>
-
-                  {/* Actions */}
-                  <button
-                    onClick={(e) => { e.stopPropagation(); handleRemove(item.id); }}
-                    className="w-7 h-7 flex items-center justify-center rounded-full bg-[var(--surface2)] text-[var(--txt3)] hover:text-[var(--red)] hover:bg-[rgba(220,38,38,0.1)] transition-colors self-start"
-                  >
+                  <button onClick={(e) => { e.stopPropagation(); handleRemove(item.id); }} className="w-7 h-7 flex items-center justify-center rounded-full bg-[var(--surface2)] text-[var(--txt3)] hover:text-red-400 transition-colors self-start">
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
