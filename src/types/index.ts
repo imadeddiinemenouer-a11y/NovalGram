@@ -25,6 +25,7 @@ export interface Novel {
   is_published: boolean;
   created_at: string;
   updated_at: string;
+  chapters?: Chapter[];
 }
 
 export interface Chapter {
@@ -38,6 +39,7 @@ export interface Chapter {
   is_published: boolean;
   published_at: string | null;
   created_at: string;
+  novel?: { author?: string };
 }
 
 export interface LibraryItem {
@@ -49,17 +51,6 @@ export interface LibraryItem {
   last_chapter_read: number;
   added_at: string;
   updated_at: string;
-}
-
-export interface Bookmark {
-  id: string;
-  user_id: string;
-  novel_id: string;
-  chapter_id: string;
-  chapter?: Chapter;
-  page_position: number;
-  note: string | null;
-  created_at: string;
 }
 
 export interface Comment {
@@ -74,86 +65,30 @@ export interface Comment {
   created_at: string;
 }
 
-export interface Rating {
+export interface Bookmark {
   id: string;
   user_id: string;
   novel_id: string;
-  rating: number;
-  review: string | null;
+  chapter_id: string;
+  novel?: Novel;
+  chapter?: Chapter;
+  page_position: number;
+  note: string | null;
   created_at: string;
 }
 
-export interface Follow {
-  id: string;
-  follower_id: string;
-  following_id: string | null;
-  novel_id: string | null;
-  created_at: string;
-}
-
-export interface Notification {
-  id: string;
-  user_id: string;
-  type: 'new_chapter' | 'comment' | 'follow' | 'mention' | 'like';
-  title: string;
-  message: string | null;
-  novel_id: string | null;
-  chapter_id: string | null;
-  is_read: boolean;
-  created_at: string;
-}
-
-export interface Donation {
-  id: string;
-  donor_id: string;
-  donor?: Profile;
-  recipient_id: string;
-  recipient?: Profile;
-  amount: number;
-  message: string | null;
-  status: 'pending' | 'completed' | 'failed';
-  created_at: string;
-}
-
-export interface NovelStats {
-  id: string;
-  novel_id: string;
-  date: string;
-  views: number;
-  new_followers: number;
-  new_comments: number;
-  donations_total: number;
-}
-// Helper functions for language support
 export function getLanguageByCode(code: string) {
-  const languages: Record<string, { name: string; flag: string }> = {
-    en: { name: 'English', flag: '🇬🇧' },
-    ar: { name: 'العربية', flag: '🇸🇦' },
-    fr: { name: 'Français', flag: '🇫🇷' },
-    es: { name: 'Español', flag: '🇪🇸' },
-    de: { name: 'Deutsch', flag: '🇩🇪' },
-    zh: { name: '中文', flag: '🇨🇳' },
-    ja: { name: '日本語', flag: '🇯🇵' },
-    ko: { name: '한국어', flag: '🇰🇷' },
-    ru: { name: 'Русский', flag: '🇷🇺' },
-    tr: { name: 'Türkçe', flag: '🇹🇷' },
-    hi: { name: 'हिन्दी', flag: '🇮🇳' },
-    pt: { name: 'Português', flag: '🇧🇷' },
-    it: { name: 'Italiano', flag: '🇮🇹' },
-    id: { name: 'Bahasa Indonesia', flag: '🇮🇩' },
-    th: { name: 'ไทย', flag: '🇹🇭' },
-    vi: { name: 'Tiếng Việt', flag: '🇻🇳' },
-    pl: { name: 'Polski', flag: '🇵🇱' },
-    nl: { name: 'Nederlands', flag: '🇳🇱' },
-    sv: { name: 'Svenska', flag: '🇸🇪' },
-    fa: { name: 'فارسی', flag: '🇮🇷' },
-    ur: { name: 'اردو', flag: '🇵🇰' },
-    bn: { name: 'বাংলা', flag: '🇧🇩' },
-    ta: { name: 'தமிழ்', flag: '🇮🇳' },
-    ms: { name: 'Bahasa Melayu', flag: '🇲🇾' },
-    fil: { name: 'Filipino', flag: '🇵🇭' },
+  const languages: Record<string, { name: string; flag: string; nativeName: string }> = {
+    en: { name: 'English', flag: '🇺🇸', nativeName: 'English' },
+    ar: { name: 'Arabic', flag: '🇸🇦', nativeName: 'العربية' },
+    fr: { name: 'French', flag: '🇫🇷', nativeName: 'Français' },
+    es: { name: 'Spanish', flag: '🇪🇸', nativeName: 'Español' },
+    de: { name: 'German', flag: '🇩🇪', nativeName: 'Deutsch' },
+    ja: { name: 'Japanese', flag: '🇯🇵', nativeName: '日本語' },
+    ko: { name: 'Korean', flag: '🇰🇷', nativeName: '한국어' },
+    zh: { name: 'Chinese', flag: '🇨🇳', nativeName: '中文' },
   };
-  return languages[code] || { name: code, flag: '🌐' };
+  return languages[code] || { name: code, flag: '🌐', nativeName: code };
 }
 
 export function isRTL(code: string): boolean {
