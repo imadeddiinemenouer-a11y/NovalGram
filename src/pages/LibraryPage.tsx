@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, CheckCircle, XCircle, Clock, Bookmark, MoreVertical, Trash2, Star, Eye } from 'lucide-react';
+import { BookOpen, CheckCircle, XCircle, Clock, Bookmark, MoreVertical, Trash2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { getLibrary, updateLibraryStatus, removeFromLibrary } from '../utils/api';
@@ -10,10 +10,10 @@ import EmptyState from '../components/common/EmptyState';
 import type { LibraryItem } from '../types';
 
 const tabs = [
-  { id: 'reading', label: 'Reading', icon: BookOpen, color: 'text-blue-600', bg: 'bg-blue-50' },
-  { id: 'completed', label: 'Completed', icon: CheckCircle, color: 'text-green-600', bg: 'bg-green-50' },
-  { id: 'dropped', label: 'Dropped', icon: XCircle, color: 'text-red-600', bg: 'bg-red-50' },
-  { id: 'planned', label: 'Planned', icon: Clock, color: 'text-purple-600', bg: 'bg-purple-50' },
+  { id: 'reading', label: 'Reading', icon: BookOpen, color: 'text-[var(--teal)]', bg: 'bg-[var(--teal)]/10' },
+  { id: 'completed', label: 'Completed', icon: CheckCircle, color: 'text-[var(--green)]', bg: 'bg-[var(--green)]/10' },
+  { id: 'dropped', label: 'Dropped', icon: XCircle, color: 'text-[var(--red)]', bg: 'bg-[var(--red)]/10' },
+  { id: 'planned', label: 'Saved', icon: Bookmark, color: 'text-[var(--amber)]', bg: 'bg-[var(--amber)]/10' },
 ];
 
 export default function LibraryPage() {
@@ -25,7 +25,6 @@ export default function LibraryPage() {
   const [library, setLibrary] = useState<LibraryItem[]>([]);
   const [activeTab, setActiveTab] = useState('reading');
   const [isLoading, setIsLoading] = useState(true);
-  const [showMenu, setShowMenu] = useState<string | null>(null);
 
   useEffect(() => {
     if (user) loadLibrary();
@@ -72,14 +71,14 @@ export default function LibraryPage() {
 
   if (!user) {
     return (
-      <div className={`min-h-screen flex items-center justify-center ${isDark ? 'bg-gray-950' : 'bg-gray-50'}`}>
+      <div className={`min-h-screen flex items-center justify-center ${isDark ? 'bg-[var(--void)]' : 'bg-gray-50'}`}>
         <div className="text-center">
-          <BookOpen className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-          <h2 className={`text-xl font-semibold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>Sign in to view your library</h2>
-          <p className="text-gray-500 mb-4">Keep track of your reading progress</p>
+          <BookOpen className="w-16 h-16 mx-auto mb-4 text-[var(--txt3)]" />
+          <h2 className={`text-xl font-semibold mb-2 ${isDark ? 'text-[var(--txt)]' : 'text-gray-900'}`}>Sign in to view your library</h2>
+          <p className="text-[var(--txt3)] mb-4">Keep track of your reading progress</p>
           <button
             onClick={() => navigate('/login')}
-            className="px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors"
+            className="px-6 py-3 bg-gradient-to-r from-[var(--v)] to-[var(--mg)] text-white rounded-full font-semibold hover:opacity-90 transition-opacity"
           >
             Sign In
           </button>
@@ -89,11 +88,11 @@ export default function LibraryPage() {
   }
 
   return (
-    <div className={`min-h-screen transition-colors ${isDark ? 'bg-gray-950 text-white' : 'bg-gray-50 text-gray-900'}`}>
+    <div className={`min-h-screen transition-colors ${isDark ? 'bg-[var(--void)] text-[var(--txt)]' : 'bg-gray-50 text-gray-900'}`}>
       {/* Header & Tabs */}
-      <div className={`sticky top-14 z-30 shadow-sm ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'} border-b`}>
+      <div className={`sticky top-14 z-30 border-b ${isDark ? 'bg-[var(--void)]/95 backdrop-blur-2xl border-[var(--b2)]' : 'bg-white border-gray-200'}`}>
         <div className="max-w-4xl mx-auto px-4 py-4">
-          <h1 className="text-2xl font-bold mb-4">My Library</h1>
+          <h1 className="text-2xl font-bold mb-4 font-serif">My Library</h1>
           <div className="flex gap-2 overflow-x-auto scrollbar-hide">
             {tabs.map((tab) => {
               const Icon = tab.icon;
@@ -102,16 +101,18 @@ export default function LibraryPage() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all ${
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap text-sm font-semibold transition-all ${
                     activeTab === tab.id
-                      ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900'
-                      : `${isDark ? 'bg-gray-800 text-gray-400 hover:bg-gray-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`
+                      ? 'bg-[var(--v)] text-white'
+                      : isDark
+                        ? 'bg-[var(--surface2)] text-[var(--txt3)] hover:bg-[var(--surface3)]'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
                 >
                   <Icon className={`w-4 h-4 ${activeTab === tab.id ? '' : tab.color}`} />
                   {tab.label}
                   <span className={`text-xs px-2 py-0.5 rounded-full ${
-                    activeTab === tab.id ? 'bg-white/20 dark:bg-gray-900/20' : 'bg-gray-200 dark:bg-gray-700'
+                    activeTab === tab.id ? 'bg-white/20' : isDark ? 'bg-[var(--surface3)]' : 'bg-gray-200'
                   }`}>
                     {count}
                   </span>
@@ -123,7 +124,7 @@ export default function LibraryPage() {
       </div>
 
       {/* Content */}
-      <div className="max-w-4xl mx-auto px-4 py-6">
+      <div className="max-w-4xl mx-auto px-3 py-6">
         {isLoading ? (
           <LoadingSpinner className="py-12" />
         ) : filteredItems.length === 0 ? (
@@ -135,7 +136,7 @@ export default function LibraryPage() {
               activeTab === 'reading' && (
                 <button
                   onClick={() => navigate('/')}
-                  className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                  className="mt-4 px-4 py-2 bg-[var(--v)] text-white rounded-full text-sm font-semibold hover:opacity-90"
                 >
                   Discover Novels
                 </button>
@@ -143,8 +144,8 @@ export default function LibraryPage() {
             }
           />
         ) : (
-          <div className="space-y-4">
-            {filteredItems.map((item) => {
+          <div className="space-y-2">
+            {filteredItems.map((item, index) => {
               const novel = item.novel;
               if (!novel) return null;
 
@@ -155,87 +156,61 @@ export default function LibraryPage() {
                 <div
                   key={item.id}
                   onClick={() => navigate(`/novel/${novel.id}`)}
-                  className={`relative flex gap-4 p-4 rounded-xl shadow-sm cursor-pointer transition-all hover:shadow-md ${
-                    isDark ? 'bg-gray-900 hover:bg-gray-800' : 'bg-white hover:bg-gray-50'
-                  }`}
+                  className="card flex gap-3 p-3 cursor-pointer group animate-fade-in"
+                  style={{ animationDelay: `${index * 0.04}s` }}
                 >
-                  <img
-                    src={novel.cover_image || 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=300&h=450&fit=crop'}
-                    alt={novel.title}
-                    className="w-20 h-28 object-cover rounded-lg flex-shrink-0 shadow-sm"
-                  />
+                  {/* Cover */}
+                  <div
+                    className="w-[62px] h-[84px] rounded-lg flex-shrink-0 overflow-hidden relative flex items-center justify-center text-3xl"
+                    style={{
+                      background: `linear-gradient(135deg, ${(novel as any).c1 || '#6d28d9'}55, ${(novel as any).c2 || '#db2777'}22)`,
+                    }}
+                  >
+                    {novel.cover_image ? (
+                      <img src={novel.cover_image} alt={novel.title} className="w-full h-full object-cover" />
+                    ) : (
+                      <span>{(novel as any).emoji || '📖'}</span>
+                    )}
+                  </div>
+
+                  {/* Info */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between mb-1">
-                      <h3 className="font-semibold truncate">{novel.title}</h3>
-                      <div className="relative">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setShowMenu(showMenu === item.id ? null : item.id);
-                          }}
-                          className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
-                        >
-                          <MoreVertical className="w-4 h-4 text-gray-400" />
-                        </button>
-                        {showMenu === item.id && (
-                          <div className={`absolute right-0 top-8 rounded-xl shadow-lg border py-2 z-10 w-48 ${
-                            isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
-                          }`}>
-                            {tabs.filter(t => t.id !== item.status).map(tab => {
-                              const TabIcon = tab.icon;
-                              return (
-                                <button
-                                  key={tab.id}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleStatusChange(item.id, tab.id);
-                                    setShowMenu(null);
-                                  }}
-                                  className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 text-left text-sm"
-                                >
-                                  <TabIcon className={`w-4 h-4 ${tab.color}`} />
-                                  Move to {tab.label}
-                                </button>
-                              );
-                            })}
-                            <hr className={`my-2 ${isDark ? 'border-gray-700' : 'border-gray-200'}`} />
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleRemove(item.id);
-                                setShowMenu(null);
-                              }}
-                              className="w-full flex items-center gap-2 px-4 py-2 hover:bg-red-50 dark:hover:bg-red-900/20 text-left text-sm text-red-600"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                              Remove
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                    <h3 className="text-sm font-bold truncate group-hover:text-[var(--vb)] transition-colors">
+                      {novel.title}
+                    </h3>
+                    <p className="text-[11px] text-[var(--txt3)] mb-2">
                       {novel.author?.display_name || novel.author?.username || 'Unknown'}
                     </p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
+                    <p className="text-[10px] text-[var(--txt3)] mb-2">
                       Chapter {item.last_chapter_read} of {totalChapters || '?'}
                     </p>
 
                     {/* Progress */}
-                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-2">
-                      <div
-                        className="bg-indigo-600 dark:bg-indigo-400 h-2 rounded-full transition-all"
-                        style={{ width: `${Math.min(progress, 100)}%` }}
-                      />
-                    </div>
-                    <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-                      <span>{progress}% completed</span>
-                      <div className="flex items-center gap-2">
-                        <span className="flex items-center gap-1"><Star className="w-3 h-3 text-yellow-500" /> {novel.rating || '0.0'}</span>
-                        <span className="flex items-center gap-1"><Eye className="w-3 h-3" /> {formatNumber(novel.views || 0)}</span>
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 h-1 bg-[var(--surface3)] rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-gradient-to-r from-[var(--v)] to-[var(--mg)] rounded-full transition-all"
+                          style={{ width: `${Math.min(progress, 100)}%` }}
+                        />
                       </div>
+                      <span className="text-[10px] text-[var(--txt3)]">{progress}%</span>
                     </div>
+
+                    {/* New chapter badge */}
+                    {(novel as any).hot && (
+                      <span className="inline-block mt-2 px-2 py-0.5 rounded-full text-[9px] font-bold bg-[rgba(219,39,119,0.18)] text-[var(--mg)]">
+                        🔔 New chapter available!
+                      </span>
+                    )}
                   </div>
+
+                  {/* Actions */}
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleRemove(item.id); }}
+                    className="w-7 h-7 flex items-center justify-center rounded-full bg-[var(--surface2)] text-[var(--txt3)] hover:text-[var(--red)] hover:bg-[rgba(220,38,38,0.1)] transition-colors self-start"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
                 </div>
               );
             })}
