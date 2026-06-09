@@ -43,7 +43,6 @@ export default function TopBar({ onMenuToggle }: TopBarProps) {
           </form>
         ) : (
           <>
-            {/* Left: Hamburger + Brand */}
             <div className="flex items-center gap-2">
               <button
                 onClick={onMenuToggle}
@@ -51,9 +50,7 @@ export default function TopBar({ onMenuToggle }: TopBarProps) {
               >
                 <Menu className="w-4 h-4" />
               </button>
-              
               <div className="flex items-center gap-2 cursor-pointer select-none" onClick={() => navigate('/')}>
-                {/* Novelgram Logo SVG */}
                 <svg className="w-8 h-8" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
                   <defs>
                     <linearGradient id="bl" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -79,9 +76,7 @@ export default function TopBar({ onMenuToggle }: TopBarProps) {
               </div>
             </div>
 
-            {/* Right: Actions */}
             <div className="flex items-center gap-1.5">
-              {/* Coins Badge */}
               <button
                 onClick={() => navigate('/wallet')}
                 className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-[rgba(217,119,6,0.14)] border border-[rgba(245,158,11,0.28)] text-[#f59e0b] text-xs font-bold transition-all active:scale-90"
@@ -92,37 +87,17 @@ export default function TopBar({ onMenuToggle }: TopBarProps) {
                 </svg>
                 <span>1.2K</span>
               </button>
-
-              {/* Search */}
-              <button
-                onClick={() => setShowSearch(true)}
-                className="w-9 h-9 flex items-center justify-center rounded-full bg-[var(--surface2)] text-[var(--txt2)] hover:text-[var(--txt)] transition-colors"
-              >
+              <button onClick={() => setShowSearch(true)} className="w-9 h-9 flex items-center justify-center rounded-full bg-[var(--surface2)] text-[var(--txt2)] hover:text-[var(--txt)] transition-colors">
                 <Search className="w-4 h-4" />
               </button>
-
-              {/* Notifications */}
-              <button
-                onClick={() => navigate('/notifications')}
-                className="w-9 h-9 flex items-center justify-center rounded-full bg-[var(--surface2)] text-[var(--txt2)] hover:text-[var(--txt)] transition-colors relative"
-              >
+              <button onClick={() => navigate('/notifications')} className="w-9 h-9 flex items-center justify-center rounded-full bg-[var(--surface2)] text-[var(--txt2)] hover:text-[var(--txt)] transition-colors relative">
                 <Bell className="w-4 h-4" />
                 <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[var(--mg)] border-2 border-[var(--void)]" />
               </button>
-
-              {/* Theme Toggle */}
-              <button
-                onClick={toggleTheme}
-                className="w-9 h-9 flex items-center justify-center rounded-full bg-[var(--surface2)] text-[var(--txt2)] hover:text-[var(--txt)] transition-colors"
-              >
+              <button onClick={toggleTheme} className="w-9 h-9 flex items-center justify-center rounded-full bg-[var(--surface2)] text-[var(--txt2)] hover:text-[var(--txt)] transition-colors">
                 {theme === 'dark' ? <Sun className="w-4 h-4 text-yellow-400" /> : <Moon className="w-4 h-4" />}
               </button>
-
-              {/* Profile Avatar */}
-              <button
-                onClick={() => navigate('/profile')}
-                className="w-8 h-8 rounded-full bg-gradient-to-r from-[var(--v)] to-[var(--mg)] flex items-center justify-center text-white text-sm font-bold"
-              >
+              <button onClick={() => navigate('/profile')} className="w-8 h-8 rounded-full bg-gradient-to-r from-[var(--v)] to-[var(--mg)] flex items-center justify-center text-white text-sm font-bold">
                 {user?.display_name?.[0] || user?.username?.[0] || 'U'}
               </button>
             </div>
