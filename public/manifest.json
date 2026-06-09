@@ -1,0 +1,23 @@
+{
+  "name": "Novelgram - قصصك تنبض بالحياة",
+  "short_name": "Novelgram",
+  "description": "منصة القصص التفاعلية - اقرأ واكتب روايات مثل القنوات",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0a0f",
+  "theme_color": "#7c3aed",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "logo.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["books", "entertainment", "social"],
+  "screenshots": [],
+  "prefer_related_applications": false
+}
