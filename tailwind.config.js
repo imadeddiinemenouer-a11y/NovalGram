@@ -22,36 +22,13 @@ export default {
         },
       },
       fontFamily: {
-        sans: [
-          'Inter',
-          '-apple-system',
-          'BlinkMacSystemFont',
-          'Segoe UI',
-          'Roboto',
-          'Noto Sans Arabic',
-          'Noto Sans SC',
-          'Noto Sans JP',
-          'Noto Sans KR',
-          'Noto Sans Bengali',
-          'Noto Sans Tamil',
-          'Noto Sans Thai',
-          'Noto Sans Devanagari',
-          'sans-serif'
-        ],
-        arabic: ['Noto Sans Arabic', 'Inter', 'sans-serif'],
-        chinese: ['Noto Sans SC', 'Inter', 'sans-serif'],
-        japanese: ['Noto Sans JP', 'Inter', 'sans-serif'],
-        korean: ['Noto Sans KR', 'Inter', 'sans-serif'],
-        bengali: ['Noto Sans Bengali', 'Inter', 'sans-serif'],
-        tamil: ['Noto Sans Tamil', 'Inter', 'sans-serif'],
-        thai: ['Noto Sans Thai', 'Inter', 'sans-serif'],
-        hindi: ['Noto Sans Devanagari', 'Inter', 'sans-serif'],
+        serif: ['Crimson Pro', 'Georgia', 'serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
       },
       animation: {
         'fade-in': 'fadeIn 0.3s ease-in-out',
         'slide-up': 'slideUp 0.3s ease-out',
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        'bounce-slow': 'bounce 2s infinite',
       },
       keyframes: {
         fadeIn: {
@@ -79,7 +56,5 @@ export default {
       },
     },
   },
-  plugins: [
-    require('tailwindcss-rtl'),
-  ],
-};
+  plugins: [],
+}
