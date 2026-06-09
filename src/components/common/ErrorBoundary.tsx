@@ -1,5 +1,4 @@
-import React, { Component, type ErrorInfo, type ReactNode } from 'react';
-import { AlertTriangle } from 'lucide-react';
+import React, { Component, type ReactNode } from 'react';
 
 interface Props {
   children: ReactNode;
@@ -16,31 +15,29 @@ export default class ErrorBoundary extends Component<Props, State> {
     this.state = { hasError: false, error: null };
   }
 
-  static getDerivedStateFromError(error: Error): State {
+  static getDerivedStateFromError(error: Error) {
     return { hasError: true, error };
-  }
-
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Error caught by boundary:', error, errorInfo);
   }
 
   render() {
     if (this.state.hasError) {
       return (
-        <div className="flex flex-col items-center justify-center min-h-screen p-4">
-          <AlertTriangle className="w-12 h-12 text-red-500 mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Something went wrong</h2>
-          <p className="text-sm text-gray-500 mb-4">{this.state.error?.message}</p>
+        <div className="min-h-screen bg-[var(--void)] text-[var(--txt)] flex flex-col items-center justify-center p-6 text-center">
+          <div className="text-5xl mb-4">⚠️</div>
+          <h1 className="text-xl font-bold mb-2">Something went wrong</h1>
+          <p className="text-[var(--txt2)] text-sm mb-4">An unexpected error occurred. Try refreshing the page.</p>
+          <pre className="text-[var(--red)] text-xs bg-[var(--surface2)] p-3 rounded-xl max-w-full overflow-auto">
+            {this.state.error?.message}
+          </pre>
           <button
             onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+            className="mt-4 px-6 py-2 rounded-full bg-gradient-to-r from-[var(--v)] to-[var(--mg)] text-white font-semibold"
           >
-            Reload Page
+            Refresh Page
           </button>
         </div>
       );
     }
-
     return this.props.children;
   }
 }
