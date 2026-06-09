@@ -66,13 +66,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function signUp(email: string, password: string, username: string) {
     const { data: authData, error: authError } = await supabase.auth.signUp({ email, password });
     if (authError) throw authError;
-
     if (authData.user) {
-      await supabase.from('profiles').insert({
-        id: authData.user.id,
-        username,
-        role: 'reader',
-      });
+      await supabase.from('profiles').insert({ id: authData.user.id, username, role: 'reader' });
       const profile = await getCurrentUser();
       setUser(profile);
     }
@@ -81,7 +76,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function signIn(email: string, password: string) {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
-
     if (data.user) {
       const profile = await getCurrentUser();
       setUser(profile);
