@@ -52,10 +52,9 @@ export default function BottomNav() {
       className="flex bg-[var(--void)]/97 backdrop-blur-2xl border-t border-[var(--b2)] flex-shrink-0 z-50 relative"
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
     >
-      {/* Home */}
       <button
         onClick={() => navigate('/')}
-        className={`flex-1 flex flex-col items-center gap-1 py-2 border-none bg-transparent cursor-pointer transition-colors duration-200 ${
+        className={`flex-1 flex flex-col items-center gap-1 py-2 border-none bg-transparent cursor-pointer transition-colors ${
           isActive('/') ? 'text-[var(--vb)]' : 'text-[var(--txt3)]'
         }`}
       >
@@ -63,10 +62,9 @@ export default function BottomNav() {
         <span className="text-[10px] font-semibold tracking-wide">Home</span>
       </button>
 
-      {/* Discover / Search */}
       <button
         onClick={() => navigate('/search')}
-        className={`flex-1 flex flex-col items-center gap-1 py-2 border-none bg-transparent cursor-pointer transition-colors duration-200 ${
+        className={`flex-1 flex flex-col items-center gap-1 py-2 border-none bg-transparent cursor-pointer transition-colors ${
           isActive('/search') ? 'text-[var(--vb)]' : 'text-[var(--txt3)]'
         }`}
       >
@@ -74,7 +72,6 @@ export default function BottomNav() {
         <span className="text-[10px] font-semibold tracking-wide">Discover</span>
       </button>
 
-      {/* Write (Central Pill) */}
       <button
         onClick={() => navigate('/studio')}
         className="flex-1 flex flex-col items-center gap-1 py-1 border-none bg-transparent cursor-pointer"
@@ -91,10 +88,9 @@ export default function BottomNav() {
         <span className="text-[10px] font-semibold text-[var(--txt3)] tracking-wide mt-0.5">Write</span>
       </button>
 
-      {/* Library */}
       <button
         onClick={() => navigate('/library')}
-        className={`flex-1 flex flex-col items-center gap-1 py-2 border-none bg-transparent cursor-pointer transition-colors duration-200 ${
+        className={`flex-1 flex flex-col items-center gap-1 py-2 border-none bg-transparent cursor-pointer transition-colors ${
           isActive('/library') ? 'text-[var(--vb)]' : 'text-[var(--txt3)]'
         }`}
       >
@@ -102,16 +98,14 @@ export default function BottomNav() {
         <span className="text-[10px] font-semibold tracking-wide">Library</span>
       </button>
 
-      {/* Profile / Me */}
       <button
         onClick={() => navigate('/profile')}
-        className={`flex-1 flex flex-col items-center gap-1 py-2 border-none bg-transparent cursor-pointer transition-colors duration-200 relative ${
+        className={`flex-1 flex flex-col items-center gap-1 py-2 border-none bg-transparent cursor-pointer transition-colors relative ${
           isActive('/profile') ? 'text-[var(--vb)]' : 'text-[var(--txt3)]'
         }`}
       >
         <ProfileIcon />
         <span className="text-[10px] font-semibold tracking-wide">Me</span>
-        {/* Notification dot */}
         <span className="absolute top-1.5 right-[calc(50%-14px)] w-[7px] h-[7px] rounded-full bg-[var(--mg)] border-2 border-[var(--void)]" />
       </button>
     </nav>
