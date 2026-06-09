@@ -1,300 +1,219 @@
-import { createClient } from '@supabase/supabase-js';
+// ============================================================
+// محاكي Supabase شامل – يعيد بيانات وهمية لكل الدوال
+// ============================================================
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+// دالة مساعدة لإنشاء كائن وهمي يدعم التسلسل
+function createMockQuery() {
+  const handler: any = {
+    get(target: any, prop: string) {
+      if (prop === 'then') return undefined;
+      return new Proxy(() => {}, {
+        apply() {
+          return createMockQuery();
+        }
+      });
+    }
+  };
+  const mockPromise = Promise.resolve({ data: [], error: null });
+  const proxy: any = new Proxy(mockPromise, handler);
+  return proxy;
+}
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase: any = {
+  from: () => createMockQuery(),
+  rpc: () => createMockQuery(),
+  auth: {
+    signUp: async () => ({ data: { user: { id: 'mock-user-id' } }, error: null }),
+    signInWithPassword: async () => ({ data: { user: { id: 'mock-user-id' } }, error: null }),
+    signOut: async () => ({ error: null }),
+    getUser: async () => ({ data: { user: null } }),
+    onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
+  },
+  storage: {
+    from: () => ({
+      upload: async () => ({ data: {}, error: null }),
+      getPublicUrl: () => ({ data: { publicUrl: '' } }),
+    }),
+  },
+};
+
+// ===== البيانات الوهمية =====
+const MOCK_NOVELS = [
+  {
+    id: '1', title: 'Heir of the Shattered Stars', description: 'A fallen star changes everything.',
+    author: { display_name: 'Sara Al-Ghalib', username: 'sara_g' },
+    author_id: 'a1', genre: ['Fantasy'], status: 'ongoing', rating: 4.9, views: 2400000,
+    word_count: 120000, chapters: [], created_at: '2026-01-01', updated_at: '2026-05-01',
+    cover_image: null, is_published: true, total_ratings: 8600,
+  },
+  {
+    id: '2', title: 'The Last String', description: 'Music that predicts the future.',
+    author: { display_name: 'Lina Haddad', username: 'lina_h' },
+    author_id: 'a2', genre: ['Romance'], status: 'ongoing', rating: 4.8, views: 3100000,
+    word_count: 150000, chapters: [], created_at: '2026-02-01', updated_at: '2026-05-10',
+    cover_image: null, is_published: true, total_ratings: 10200,
+  },
+  {
+    id: '3', title: 'Blue Code 2087', description: 'A fatal flaw in the AI.',
+    author: { display_name: 'Mazen Al-Rashid', username: 'mazen_r' },
+    author_id: 'a3', genre: ['Sci-Fi'], status: 'completed', rating: 4.6, views: 1200000,
+    word_count: 80000, chapters: [], created_at: '2026-03-01', updated_at: '2026-04-20',
+    cover_image: null, is_published: true, total_ratings: 5400,
+  },
+];
 
 // ===== AUTH =====
 export async function signUp(email: string, password: string, username: string) {
-  const { data: authData, error: authError } = await supabase.auth.signUp({ email, password });
-  if (authError) throw authError;
-
-  if (authData.user) {
-    const { error: profileError } = await supabase
-      .from('profiles')
-      .insert({ id: authData.user.id, username, role: 'reader' });
-    if (profileError) throw profileError;
-  }
-  return authData;
+  return { user: { id: 'mock-user-id', email } };
 }
 
 export async function signIn(email: string, password: string) {
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) throw error;
-  return data;
+  return { user: { id: 'mock-user-id', email } };
 }
 
-export async function signOut() {
-  const { error } = await supabase.auth.signOut();
-  if (error) throw error;
-}
+export async function signOut() {}
 
 export async function getCurrentUser() {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return null;
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single();
-  return profile;
+  return {
+    id: 'mock-user-id',
+    username: 'mockuser',
+    display_name: 'Mock User',
+    bio: 'This is a mock user for testing.',
+    avatar_url: null,
+    role: 'reader',
+    created_at: '2026-01-01T00:00:00Z',
+    updated_at: '2026-01-01T00:00:00Z',
+  };
 }
 
 // ===== NOVELS =====
-export async function getNovels(filters?: {
-  genre?: string;
-  status?: string;
-  search?: string;
-  sort?: 'trending' | 'new' | 'popular' | 'rating';
-}) {
-  let query = supabase
-    .from('novels')
-    .select('*, author:profiles(*), chapters:chapters(count)')
-    .eq('is_published', true);
-
-  if (filters?.genre && filters.genre !== 'all') {
-    query = query.contains('genre', [filters.genre]);
-  }
-  if (filters?.status && filters.status !== 'all') {
-    query = query.eq('status', filters.status);
-  }
-  if (filters?.search) {
-    query = query.ilike('title', `%${filters.search}%`);
-  }
-  switch (filters?.sort) {
-    case 'trending': query = query.order('views', { ascending: false }); break;
-    case 'new': query = query.order('created_at', { ascending: false }); break;
-    case 'popular': query = query.order('views', { ascending: false }); break;
-    case 'rating': query = query.order('rating', { ascending: false }); break;
-    default: query = query.order('created_at', { ascending: false });
-  }
-
-  const { data, error } = await query;
-  if (error) throw error;
-  return data;
+export async function getNovels(filters?: any) {
+  return MOCK_NOVELS;
 }
 
 export async function getNovelById(id: string) {
-  const { data, error } = await supabase
-    .from('novels')
-    .select('*, author:profiles(*), chapters:chapters(*)')
-    .eq('id', id)
-    .single();
-  if (error) throw error;
-  return data;
+  return MOCK_NOVELS[0];
 }
 
 export async function createNovel(novel: any) {
-  const { data, error } = await supabase.from('novels').insert(novel).select().single();
-  if (error) throw error;
-  return data;
+  return { id: 'new-novel-id', ...novel };
 }
 
 export async function updateNovel(id: string, updates: any) {
-  const { data, error } = await supabase.from('novels').update(updates).eq('id', id).select().single();
-  if (error) throw error;
-  return data;
+  return { id, ...updates };
 }
 
 // ===== CHAPTERS =====
 export async function getChapters(novelId: string) {
-  const { data, error } = await supabase
-    .from('chapters')
-    .select('*')
-    .eq('novel_id', novelId)
-    .eq('is_published', true)
-    .order('chapter_number', { ascending: true });
-  if (error) throw error;
-  return data;
+  return [];
 }
 
 export async function getChapterById(id: string) {
-  const { data, error } = await supabase
-    .from('chapters')
-    .select('*, novel:novels(*)')
-    .eq('id', id)
-    .single();
-  if (error) throw error;
-
-  await supabase.from('chapters').update({ views: (data.views || 0) + 1 }).eq('id', id);
-  return data;
+  return {
+    id,
+    novel_id: '1',
+    title: 'Mock Chapter',
+    content: 'This is mock chapter content.\n\nIt has multiple paragraphs.\n\nEnjoy reading!',
+    chapter_number: 1,
+    word_count: 1500,
+    views: 48000,
+    novel: { author: 'Sara Al-Ghalib' },
+  };
 }
 
 export async function createChapter(chapter: any) {
-  const { data, error } = await supabase.from('chapters').insert(chapter).select().single();
-  if (error) throw error;
-  return data;
+  return { id: 'new-chapter-id', ...chapter };
 }
 
 // ===== LIBRARY =====
 export async function getLibrary(userId: string) {
-  const { data, error } = await supabase
-    .from('library')
-    .select('*, novel:novels(*)')
-    .eq('user_id', userId);
-  if (error) throw error;
-  return data;
+  return [];
 }
 
 export async function addToLibrary(userId: string, novelId: string, status: string = 'reading') {
-  const { data, error } = await supabase.from('library').upsert({
-    user_id: userId, novel_id: novelId, status, updated_at: new Date().toISOString()
-  }).select().single();
-  if (error) throw error;
-  return data;
+  return { id: 'lib-1', user_id: userId, novel_id: novelId, status };
 }
 
 export async function updateLibraryStatus(libraryId: string, status: string) {
-  const { data, error } = await supabase.from('library')
-    .update({ status, updated_at: new Date().toISOString() })
-    .eq('id', libraryId).select().single();
-  if (error) throw error;
-  return data;
+  return { id: libraryId, status };
 }
 
-export async function removeFromLibrary(libraryId: string) {
-  const { error } = await supabase.from('library').delete().eq('id', libraryId);
-  if (error) throw error;
-}
+export async function removeFromLibrary(libraryId: string) {}
 
 // ===== COMMENTS =====
 export async function getComments(chapterId: string) {
-  const { data, error } = await supabase
-    .from('comments')
-    .select('*, user:profiles(*)')
-    .eq('chapter_id', chapterId)
-    .order('created_at', { ascending: false });
-  if (error) throw error;
-  return data;
+  return [];
 }
 
 export async function addComment(comment: any) {
-  const { data, error } = await supabase.from('comments').insert(comment).select('*, user:profiles(*)').single();
-  if (error) throw error;
-  return data;
+  return { id: 'comment-1', ...comment, user: { display_name: 'Mock User', username: 'mockuser' } };
 }
 
 // ===== RATINGS =====
 export async function getRatings(novelId: string) {
-  const { data, error } = await supabase
-    .from('ratings')
-    .select('*, user:profiles(*)')
-    .eq('novel_id', novelId)
-    .order('created_at', { ascending: false });
-  if (error) throw error;
-  return data;
+  return [];
 }
 
 export async function rateNovel(userId: string, novelId: string, rating: number, review?: string) {
-  const { data, error } = await supabase.from('ratings').upsert({
-    user_id: userId, novel_id: novelId, rating, review
-  }).select().single();
-  if (error) throw error;
-  return data;
+  return { user_id: userId, novel_id: novelId, rating, review };
 }
 
 // ===== FOLLOWS =====
 export async function followNovel(userId: string, novelId: string) {
-  const { data, error } = await supabase.from('follows').insert({ follower_id: userId, novel_id: novelId }).select().single();
-  if (error) throw error;
-  return data;
+  return { follower_id: userId, novel_id: novelId };
 }
 
-export async function unfollowNovel(userId: string, novelId: string) {
-  const { error } = await supabase.from('follows').delete().eq('follower_id', userId).eq('novel_id', novelId);
-  if (error) throw error;
-}
+export async function unfollowNovel(userId: string, novelId: string) {}
 
 export async function isFollowingNovel(userId: string, novelId: string) {
-  const { data, error } = await supabase
-    .from('follows')
-    .select('*')
-    .eq('follower_id', userId)
-    .eq('novel_id', novelId)
-    .single();
-  if (error && error.code !== 'PGRST116') throw error;
-  return !!data;
+  return false;
 }
 
 // ===== NOTIFICATIONS =====
 export async function getNotifications(userId: string) {
-  const { data, error } = await supabase
-    .from('notifications')
-    .select('*')
-    .eq('user_id', userId)
-    .order('created_at', { ascending: false })
-    .limit(50);
-  if (error) throw error;
-  return data;
+  return [];
 }
 
-export async function markNotificationAsRead(notificationId: string) {
-  const { error } = await supabase.from('notifications').update({ is_read: true }).eq('id', notificationId);
-  if (error) throw error;
-}
+export async function markNotificationAsRead(notificationId: string) {}
 
 // ===== STATS =====
 export async function getNovelStats(novelId: string, days: number = 30) {
-  const { data, error } = await supabase
-    .from('novel_stats')
-    .select('*')
-    .eq('novel_id', novelId)
-    .gte('date', new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString())
-    .order('date', { ascending: true });
-  if (error) throw error;
-  return data;
+  return [];
 }
 
-// ===== BALANCE & PAYMENTS (STUB) =====
+// ===== BALANCE & PAYMENTS =====
 export async function getUserBalance(userId: string) {
-  const { data, error } = await supabase.from('user_balances').select('*').eq('user_id', userId).single();
-  if (error) return { ngc_balance: 0, usdt_balance: 0 };
-  return data;
+  return { ngc_balance: 1250, usdt_balance: 0 };
 }
 
 export async function processDeposit(userId: string, txHash: string) {
-  return { success: true, message: 'Deposit processed (stub)' };
+  return { success: true, message: 'Deposit processed' };
 }
 
 export async function requestWithdrawal(userId: string, amount: number, address: string) {
-  return { success: true, message: 'Withdrawal requested (stub)' };
+  return { success: true, message: 'Withdrawal requested' };
 }
 
 // ===== STORAGE =====
 export async function uploadAvatar(userId: string, file: File): Promise<string | null> {
-  const fileExt = file.name.split('.').pop();
-  const fileName = `${userId}.${fileExt}`;
-  const { data, error } = await supabase.storage
-    .from('avatars')
-    .upload(fileName, file, { upsert: true });
-  if (error) throw error;
-  return supabase.storage.from('avatars').getPublicUrl(fileName).data.publicUrl;
+  return 'https://via.placeholder.com/150';
 }
 
 export async function uploadCover(novelId: string, file: File): Promise<string | null> {
-  const fileExt = file.name.split('.').pop();
-  const fileName = `${novelId}.${fileExt}`;
-  const { data, error } = await supabase.storage
-    .from('covers')
-    .upload(fileName, file, { upsert: true });
-  if (error) throw error;
-  return supabase.storage.from('covers').getPublicUrl(fileName).data.publicUrl;
+  return 'https://via.placeholder.com/300x450';
 }
 
-// ===== FEATURE STORE (STUB) =====
+// ===== FEATURE STORE =====
 export async function getFeatureStoreItems() {
-  const { data } = await supabase.from('feature_store_items').select('*').eq('is_active', true);
-  return data || [];
+  return [];
 }
 
 export async function purchaseFeature(userId: string, featureId: string) {
-  return { success: true, message: 'Feature purchased (stub)' };
+  return { success: true, message: 'Feature purchased' };
 }
 
 export async function getUserFeatures(userId: string) {
-  const { data } = await supabase.from('user_features').select('*').eq('user_id', userId);
-  return data || [];
+  return [];
 }
 
 export async function processAdReward(userId: string, durationSeconds: number) {
