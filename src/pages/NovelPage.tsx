@@ -71,7 +71,7 @@ export default function NovelPage() {
   }
 
   if (isLoading) return <LoadingSpinner className="min-h-screen" />;
-  if (!novel) return <div className="min-h-screen flex items-center justify-center">Novel not found</div>;
+  if (!novel) return <div className="min-h-screen flex items-center justify-center text-[var(--txt3)]">Novel not found</div>;
 
   const chapters = novel.chapters || [];
   const displayedChapters = showAllChapters ? chapters : chapters.slice(0, 8);
@@ -81,8 +81,7 @@ export default function NovelPage() {
   const coverColor2 = (novel as any).c2 || '#db2777';
 
   return (
-    <div className={`min-h-screen bg-[var(--void)] text-[var(--txt)] transition-colors`}>
-      {/* غلاف كبير */}
+    <div className="min-h-screen bg-[var(--void)] text-[var(--txt)] transition-colors">
       <div
         className="relative h-60 flex items-center justify-center text-8xl flex-shrink-0"
         style={{ background: `linear-gradient(135deg, ${coverColor1}55, ${coverColor2}22)` }}
@@ -97,10 +96,7 @@ export default function NovelPage() {
           <ChevronRight className="w-5 h-5 rotate-180" />
         </button>
         <div className="absolute top-4 right-4 flex gap-2 z-10">
-          <button
-            onClick={() => setShowRating(!showRating)}
-            className="w-9 h-9 flex items-center justify-center rounded-full bg-[var(--surface2)] text-[var(--txt2)] hover:text-[var(--txt)] transition-colors"
-          >
+          <button onClick={() => setShowRating(!showRating)} className="w-9 h-9 flex items-center justify-center rounded-full bg-[var(--surface2)] text-[var(--txt2)] hover:text-[var(--txt)] transition-colors">
             <Star className={`w-4 h-4 ${userRating > 0 ? 'text-yellow-500 fill-yellow-500' : ''}`} />
           </button>
           <button className="w-9 h-9 flex items-center justify-center rounded-full bg-[var(--surface2)] text-[var(--txt2)] hover:text-[var(--txt)] transition-colors">
@@ -110,19 +106,14 @@ export default function NovelPage() {
         <div className="absolute inset-0 bg-gradient-to-t from-[var(--void)] via-transparent to-transparent" />
       </div>
 
-      {/* تفاصيل الرواية */}
       <div className="px-4 -mt-6 relative z-10">
         <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-[var(--b1)] text-[var(--vl)] mb-2">
           {novel.genre?.[0] || 'Fantasy'}
         </span>
         <h1 className="font-serif text-3xl font-bold leading-tight mb-2">{novel.title}</h1>
 
-        {/* الكاتب */}
         <div className="flex items-center gap-2 mb-4">
-          <div
-            className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
-            style={{ background: `linear-gradient(135deg, ${coverColor1}44, ${coverColor2}22)` }}
-          >
+          <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold" style={{ background: `linear-gradient(135deg, ${coverColor1}44, ${coverColor2}22)` }}>
             {novel.author?.display_name?.[0] || novel.author?.username?.[0] || '?'}
           </div>
           <div className="flex-1">
@@ -132,16 +123,13 @@ export default function NovelPage() {
           <button
             onClick={handleFollow}
             className={`px-4 py-1.5 rounded-full text-xs font-bold border transition-all ${
-              isFollowing
-                ? 'bg-[var(--v)] border-[var(--v)] text-white'
-                : 'border-[var(--v)] text-[var(--vb)] hover:bg-[var(--v)] hover:text-white'
+              isFollowing ? 'bg-[var(--v)] border-[var(--v)] text-white' : 'border-[var(--v)] text-[var(--vb)] hover:bg-[var(--v)] hover:text-white'
             }`}
           >
             {isFollowing ? 'Following' : 'Follow'}
           </button>
         </div>
 
-        {/* إحصائيات */}
         <div className="grid grid-cols-4 gap-0 bg-[var(--surface)] rounded-2xl border border-[var(--b2)] overflow-hidden mb-4">
           {[
             { value: novel.views ? formatNumber(novel.views) : '0', label: 'Reads' },
@@ -156,19 +144,15 @@ export default function NovelPage() {
           ))}
         </div>
 
-        {/* وصف الرواية */}
         <p className="text-sm text-[var(--txt2)] leading-relaxed mb-4">
           {novel.description || (novel as any).desc || 'No description available.'}
         </p>
 
-        {/* أزرار التفاعل */}
         <div className="flex gap-2 mb-6">
           <button
             onClick={handleAddToLibrary}
             className={`flex-1 py-2.5 rounded-xl text-sm font-bold border transition-all ${
-              isInLibrary
-                ? 'bg-[var(--v)] border-[var(--v)] text-white'
-                : 'border-[var(--b2)] text-[var(--txt2)] hover:border-[var(--vb)]'
+              isInLibrary ? 'bg-[var(--v)] border-[var(--v)] text-white' : 'border-[var(--b2)] text-[var(--txt2)] hover:border-[var(--vb)]'
             }`}
           >
             <Bookmark className="w-4 h-4 inline mr-1" />
@@ -179,12 +163,11 @@ export default function NovelPage() {
               onClick={() => navigate(`/chapter/${chapters[0].id}`)}
               className="flex-[2] py-2.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-[var(--v)] to-[var(--mg)] shadow-lg shadow-[var(--v)]/30"
             >
-              📖 {novel.progress > 0 ? `Continue (${novel.progress}%)` : 'Start Reading'}
+              📖 {(novel as any).progress > 0 ? `Continue (${(novel as any).progress}%)` : 'Start Reading'}
             </button>
           )}
         </div>
 
-        {/* تقييم */}
         {showRating && (
           <div className="flex items-center gap-2 mb-4 p-3 rounded-xl bg-[var(--surface2)]">
             <span className="text-sm text-[var(--txt2)]">Rate:</span>
@@ -196,7 +179,6 @@ export default function NovelPage() {
           </div>
         )}
 
-        {/* قائمة الفصول */}
         <div className="mb-6">
           <h2 className="text-sm font-bold text-[var(--txt3)] uppercase tracking-wider mb-3">Chapters ({totalChapters})</h2>
           {chapters.length === 0 ? (
@@ -214,20 +196,11 @@ export default function NovelPage() {
                     <div className="text-sm font-semibold truncate">{chapter.title}</div>
                     <div className="text-[10px] text-[var(--txt3)]">{chapter.word_count?.toLocaleString() || '~2000'} words</div>
                   </div>
-                  {i >= 2 && (
-                    <span className="w-7 h-7 rounded-full bg-[rgba(217,119,6,0.15)] flex items-center justify-center text-sm">🔒</span>
-                  )}
-                  {i === 1 && (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[rgba(219,39,119,0.2)] text-[var(--mg)]">NEW</span>
-                  )}
                   <ChevronRight className="w-4 h-4 text-[var(--txt3)]" />
                 </button>
               ))}
               {chapters.length > 8 && !showAllChapters && (
-                <button
-                  onClick={() => setShowAllChapters(true)}
-                  className="w-full py-2.5 text-center text-sm font-semibold text-[var(--vb)] hover:underline"
-                >
+                <button onClick={() => setShowAllChapters(true)} className="w-full py-2.5 text-center text-sm font-semibold text-[var(--vb)] hover:underline">
                   View all {totalChapters} chapters
                 </button>
               )}
@@ -235,7 +208,6 @@ export default function NovelPage() {
           )}
         </div>
 
-        {/* التعليقات */}
         <div className="mt-6">
           <h2 className="text-sm font-bold text-[var(--txt3)] uppercase tracking-wider mb-4">Reviews & Comments</h2>
           <CommentSection chapterId={chapters[0]?.id || ''} />
