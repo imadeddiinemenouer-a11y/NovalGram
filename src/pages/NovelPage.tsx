@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Star, Heart, BookOpen, Eye, Share2, ChevronRight, Clock, User } from 'lucide-react';
+import { Star, Heart, BookOpen, Eye, Share2, ChevronRight, Clock, User, Bookmark } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { getNovelById, addToLibrary, followNovel, unfollowNovel, isFollowingNovel, rateNovel } from '../utils/api';
@@ -74,203 +74,171 @@ export default function NovelPage() {
   if (!novel) return <div className="min-h-screen flex items-center justify-center">Novel not found</div>;
 
   const chapters = novel.chapters || [];
-  const displayedChapters = showAllChapters ? chapters : chapters.slice(0, 5);
+  const displayedChapters = showAllChapters ? chapters : chapters.slice(0, 8);
   const totalChapters = chapters.length;
   const readingTime = calculateReadingTime(novel.word_count || 0);
+  const coverColor1 = (novel as any).c1 || '#6d28d9';
+  const coverColor2 = (novel as any).c2 || '#db2777';
 
   return (
-    <div className={`min-h-screen transition-colors ${isDark ? 'bg-gray-950 text-white' : 'bg-gray-50 text-gray-900'}`}>
-      {/* غلاف و معلومات الرواية */}
-      <div className={`relative ${isDark ? 'bg-gray-900' : 'bg-white'} shadow-sm border-b ${isDark ? 'border-gray-800' : 'border-gray-200'}`}>
-        <div className="max-w-4xl mx-auto px-4 py-8">
-          <div className="flex flex-col sm:flex-row gap-6">
-            {/* الغلاف */}
-            <div className="w-40 h-56 flex-shrink-0 mx-auto sm:mx-0 rounded-xl overflow-hidden shadow-lg">
-              <img
-                src={novel.cover_image || 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=300&h=450&fit=crop'}
-                alt={novel.title}
-                className="w-full h-full object-cover"
-              />
-            </div>
-
-            {/* المعلومات */}
-            <div className="flex-1 text-center sm:text-left">
-              <h1 className="text-2xl font-bold mb-2">{novel.title}</h1>
-              <button
-                onClick={() => navigate(`/author/${novel.author_id}`)}
-                className={`flex items-center justify-center sm:justify-start gap-1 text-sm mb-3 ${
-                  isDark ? 'text-gray-400 hover:text-gray-200' : 'text-gray-500 hover:text-indigo-600'
-                }`}
-              >
-                <User className="w-4 h-4" />
-                {novel.author?.display_name || novel.author?.username || 'Unknown'}
-              </button>
-
-              {/* الإحصائيات */}
-              <div className="flex flex-wrap gap-4 justify-center sm:justify-start text-sm mb-4">
-                <span className="flex items-center gap-1"><Star className="w-4 h-4 text-yellow-500 fill-yellow-500" /> {novel.rating || '0.0'} ({novel.total_ratings || 0})</span>
-                <span className="flex items-center gap-1"><Eye className="w-4 h-4" /> {formatNumber(novel.views || 0)}</span>
-                <span className="flex items-center gap-1"><BookOpen className="w-4 h-4" /> {totalChapters} ch</span>
-                <span className="flex items-center gap-1"><Clock className="w-4 h-4" /> {readingTime}</span>
-              </div>
-
-              {/* الأنواع و الحالة */}
-              <div className="flex flex-wrap gap-2 justify-center sm:justify-start mb-4">
-                {novel.genre?.map(g => (
-                  <span key={g} className="px-3 py-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-full text-sm">{g}</span>
-                ))}
-                <span className={`px-3 py-1 rounded-full text-sm capitalize ${
-                  novel.status === 'ongoing' ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' :
-                  novel.status === 'completed' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' :
-                  novel.status === 'hiatus' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400' :
-                  'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
-                }`}>
-                  {novel.status}
-                </span>
-              </div>
-
-              {/* الوصف */}
-              <p className={`text-sm leading-relaxed mb-6 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-                {novel.description || 'No description available.'}
-              </p>
-
-              {/* أزرار التفاعل */}
-              <div className="flex flex-wrap gap-3 justify-center sm:justify-start">
-                <button
-                  onClick={handleFollow}
-                  className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-medium transition-all ${
-                    isFollowing
-                      ? 'bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300'
-                      : 'bg-indigo-600 text-white hover:bg-indigo-700'
-                  }`}
-                >
-                  <Heart className={`w-4 h-4 ${isFollowing ? 'fill-pink-700 dark:fill-pink-300' : ''}`} />
-                  {isFollowing ? 'Following' : 'Follow'}
-                </button>
-                <button
-                  onClick={handleAddToLibrary}
-                  className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-medium transition-all ${
-                    isInLibrary
-                      ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
-                      : `${isDark ? 'bg-gray-800 text-gray-200 hover:bg-gray-700' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`
-                  }`}
-                >
-                  <BookOpen className="w-4 h-4" />
-                  {isInLibrary ? 'In Library' : 'Add to Library'}
-                </button>
-                {chapters.length > 0 && (
-                  <button
-                    onClick={() => navigate(`/chapter/${chapters[0].id}`)}
-                    className="flex items-center gap-2 px-6 py-2.5 bg-gray-900 dark:bg-white dark:text-gray-900 text-white rounded-xl hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors font-medium"
-                  >
-                    Read Now <ChevronRight className="w-4 h-4" />
-                  </button>
-                )}
-                <button onClick={() => setShowRating(!showRating)} className="p-2.5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
-                  <Star className={`w-5 h-5 ${userRating > 0 ? 'text-yellow-500 fill-yellow-500' : 'text-gray-400'}`} />
-                </button>
-              </div>
-
-              {showRating && (
-                <div className={`mt-3 p-3 rounded-xl flex items-center gap-2 ${isDark ? 'bg-gray-800' : 'bg-gray-100'}`}>
-                  <span className="text-sm">Rate:</span>
-                  {[1,2,3,4,5].map(star => (
-                    <button key={star} onClick={() => handleRate(star)} className="p-1 hover:scale-110">
-                      <Star className={`w-6 h-6 ${star <= userRating ? 'text-yellow-500 fill-yellow-500' : 'text-gray-400'}`} />
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
+    <div className={`min-h-screen bg-[var(--void)] text-[var(--txt)] transition-colors`}>
+      {/* غلاف كبير */}
+      <div
+        className="relative h-60 flex items-center justify-center text-8xl flex-shrink-0"
+        style={{ background: `linear-gradient(135deg, ${coverColor1}55, ${coverColor2}22)` }}
+      >
+        <div style={{ filter: `drop-shadow(0 0 20px ${coverColor1})` }}>
+          {(novel as any).emoji || '📖'}
         </div>
+        <button
+          onClick={() => navigate(-1)}
+          className="absolute top-4 left-4 w-9 h-9 flex items-center justify-center rounded-full bg-[var(--surface2)] text-[var(--txt2)] hover:text-[var(--txt)] transition-colors z-10"
+        >
+          <ChevronRight className="w-5 h-5 rotate-180" />
+        </button>
+        <div className="absolute top-4 right-4 flex gap-2 z-10">
+          <button
+            onClick={() => setShowRating(!showRating)}
+            className="w-9 h-9 flex items-center justify-center rounded-full bg-[var(--surface2)] text-[var(--txt2)] hover:text-[var(--txt)] transition-colors"
+          >
+            <Star className={`w-4 h-4 ${userRating > 0 ? 'text-yellow-500 fill-yellow-500' : ''}`} />
+          </button>
+          <button className="w-9 h-9 flex items-center justify-center rounded-full bg-[var(--surface2)] text-[var(--txt2)] hover:text-[var(--txt)] transition-colors">
+            <Share2 className="w-4 h-4" />
+          </button>
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-[var(--void)] via-transparent to-transparent" />
       </div>
 
-      {/* قائمة الفصول و التعليقات */}
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* الفصول */}
-          <div className="lg:col-span-2">
-            <div className={`rounded-xl shadow-sm ${isDark ? 'bg-gray-900' : 'bg-white'}`}>
-              <div className={`p-4 border-b ${isDark ? 'border-gray-800' : 'border-gray-100'} flex justify-between items-center`}>
-                <h2 className="text-lg font-semibold">Chapters</h2>
-                <span className="text-sm opacity-70">{totalChapters} total</span>
-              </div>
-              {chapters.length === 0 ? (
-                <EmptyState icon={BookOpen} title="No chapters yet" description="This novel hasn't published any chapters" />
-              ) : (
-                <div className={`divide-y ${isDark ? 'divide-gray-800' : 'divide-gray-100'}`}>
-                  {displayedChapters.map((chapter: Chapter) => (
-                    <button
-                      key={chapter.id}
-                      onClick={() => navigate(`/chapter/${chapter.id}`)}
-                      className={`w-full flex items-center justify-between p-4 text-left transition-colors ${
-                        isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-50'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-medium ${
-                          isDark ? 'bg-gray-800 text-gray-300' : 'bg-gray-100 text-gray-600'
-                        }`}>
-                          {chapter.chapter_number}
-                        </span>
-                        <div>
-                          <p className="font-medium">{chapter.title}</p>
-                          <p className="text-sm opacity-60">
-                            {calculateReadingTime(chapter.word_count || 0)} · {formatDate(chapter.published_at || chapter.created_at)}
-                          </p>
-                        </div>
-                      </div>
-                      <ChevronRight className="w-4 h-4 opacity-50" />
-                    </button>
-                  ))}
-                  {chapters.length > 5 && !showAllChapters && (
-                    <button
-                      onClick={() => setShowAllChapters(true)}
-                      className="w-full py-3 text-center text-indigo-600 dark:text-indigo-400 font-medium hover:bg-indigo-50 dark:hover:bg-indigo-900/20"
-                    >
-                      Show all {totalChapters} chapters
-                    </button>
+      {/* تفاصيل الرواية */}
+      <div className="px-4 -mt-6 relative z-10">
+        <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-[var(--b1)] text-[var(--vl)] mb-2">
+          {novel.genre?.[0] || 'Fantasy'}
+        </span>
+        <h1 className="font-serif text-3xl font-bold leading-tight mb-2">{novel.title}</h1>
+
+        {/* الكاتب */}
+        <div className="flex items-center gap-2 mb-4">
+          <div
+            className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
+            style={{ background: `linear-gradient(135deg, ${coverColor1}44, ${coverColor2}22)` }}
+          >
+            {novel.author?.display_name?.[0] || novel.author?.username?.[0] || '?'}
+          </div>
+          <div className="flex-1">
+            <span className="text-sm font-semibold">{novel.author?.display_name || novel.author?.username || 'Unknown'}</span>
+            {(novel.author as any)?.verified && <span className="text-[var(--teal)] text-xs ml-1">✓ Verified</span>}
+          </div>
+          <button
+            onClick={handleFollow}
+            className={`px-4 py-1.5 rounded-full text-xs font-bold border transition-all ${
+              isFollowing
+                ? 'bg-[var(--v)] border-[var(--v)] text-white'
+                : 'border-[var(--v)] text-[var(--vb)] hover:bg-[var(--v)] hover:text-white'
+            }`}
+          >
+            {isFollowing ? 'Following' : 'Follow'}
+          </button>
+        </div>
+
+        {/* إحصائيات */}
+        <div className="grid grid-cols-4 gap-0 bg-[var(--surface)] rounded-2xl border border-[var(--b2)] overflow-hidden mb-4">
+          {[
+            { value: novel.views ? formatNumber(novel.views) : '0', label: 'Reads' },
+            { value: novel.likes ? formatNumber(novel.likes) : '0', label: 'Likes' },
+            { value: totalChapters, label: 'Chapters' },
+            { value: `${novel.rating || '0.0'}⭐`, label: 'Rating' },
+          ].map((stat, i) => (
+            <div key={i} className="flex-1 py-3 text-center border-r border-[var(--b2)] last:border-r-0">
+              <div className="text-sm font-bold">{stat.value}</div>
+              <div className="text-[10px] text-[var(--txt3)] mt-0.5">{stat.label}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* وصف الرواية */}
+        <p className="text-sm text-[var(--txt2)] leading-relaxed mb-4">
+          {novel.description || (novel as any).desc || 'No description available.'}
+        </p>
+
+        {/* أزرار التفاعل */}
+        <div className="flex gap-2 mb-6">
+          <button
+            onClick={handleAddToLibrary}
+            className={`flex-1 py-2.5 rounded-xl text-sm font-bold border transition-all ${
+              isInLibrary
+                ? 'bg-[var(--v)] border-[var(--v)] text-white'
+                : 'border-[var(--b2)] text-[var(--txt2)] hover:border-[var(--vb)]'
+            }`}
+          >
+            <Bookmark className="w-4 h-4 inline mr-1" />
+            {isInLibrary ? 'Saved' : 'Add to Library'}
+          </button>
+          {chapters.length > 0 && (
+            <button
+              onClick={() => navigate(`/chapter/${chapters[0].id}`)}
+              className="flex-[2] py-2.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-[var(--v)] to-[var(--mg)] shadow-lg shadow-[var(--v)]/30"
+            >
+              📖 {novel.progress > 0 ? `Continue (${novel.progress}%)` : 'Start Reading'}
+            </button>
+          )}
+        </div>
+
+        {/* تقييم */}
+        {showRating && (
+          <div className="flex items-center gap-2 mb-4 p-3 rounded-xl bg-[var(--surface2)]">
+            <span className="text-sm text-[var(--txt2)]">Rate:</span>
+            {[1, 2, 3, 4, 5].map((star) => (
+              <button key={star} onClick={() => handleRate(star)} className="p-1 hover:scale-110 transition-transform">
+                <Star className={`w-6 h-6 ${star <= userRating ? 'text-yellow-500 fill-yellow-500' : 'text-[var(--txt3)]'}`} />
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* قائمة الفصول */}
+        <div className="mb-6">
+          <h2 className="text-sm font-bold text-[var(--txt3)] uppercase tracking-wider mb-3">Chapters ({totalChapters})</h2>
+          {chapters.length === 0 ? (
+            <EmptyState icon={BookOpen} title="No chapters yet" description="This novel hasn't published any chapters" />
+          ) : (
+            <div className="space-y-1.5">
+              {displayedChapters.map((chapter: Chapter, i: number) => (
+                <button
+                  key={chapter.id}
+                  onClick={() => navigate(`/chapter/${chapter.id}`)}
+                  className="w-full flex items-center gap-3 p-3 rounded-xl bg-[var(--surface)] border border-[var(--b2)] hover:border-[var(--b1)] transition-all"
+                >
+                  <span className="text-xs font-bold text-[var(--txt3)] w-6 flex-shrink-0">Ch.{chapter.chapter_number}</span>
+                  <div className="flex-1 text-left min-w-0">
+                    <div className="text-sm font-semibold truncate">{chapter.title}</div>
+                    <div className="text-[10px] text-[var(--txt3)]">{chapter.word_count?.toLocaleString() || '~2000'} words</div>
+                  </div>
+                  {i >= 2 && (
+                    <span className="w-7 h-7 rounded-full bg-[rgba(217,119,6,0.15)] flex items-center justify-center text-sm">🔒</span>
                   )}
-                </div>
+                  {i === 1 && (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[rgba(219,39,119,0.2)] text-[var(--mg)]">NEW</span>
+                  )}
+                  <ChevronRight className="w-4 h-4 text-[var(--txt3)]" />
+                </button>
+              ))}
+              {chapters.length > 8 && !showAllChapters && (
+                <button
+                  onClick={() => setShowAllChapters(true)}
+                  className="w-full py-2.5 text-center text-sm font-semibold text-[var(--vb)] hover:underline"
+                >
+                  View all {totalChapters} chapters
+                </button>
               )}
             </div>
+          )}
+        </div>
 
-            {/* التعليقات */}
-            <div className={`mt-8 p-4 rounded-xl shadow-sm ${isDark ? 'bg-gray-900' : 'bg-white'}`}>
-              <h2 className="text-lg font-semibold mb-4">Reviews & Comments</h2>
-              <CommentSection chapterId={chapters[0]?.id || ''} />
-            </div>
-          </div>
-
-          {/* الشريط الجانبي */}
-          <div className="space-y-4">
-            {/* كاتب الرواية */}
-            <div className={`p-4 rounded-xl shadow-sm ${isDark ? 'bg-gray-900' : 'bg-white'}`}>
-              <h3 className="font-semibold text-sm mb-3">About the Author</h3>
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/50 rounded-full flex items-center justify-center text-indigo-600 dark:text-indigo-300 font-bold">
-                  {novel.author?.display_name?.[0] || novel.author?.username?.[0] || 'U'}
-                </div>
-                <div>
-                  <p className="font-medium">{novel.author?.display_name || novel.author?.username || 'Unknown'}</p>
-                  <p className="text-sm opacity-60">{novel.author?.bio || 'No bio'}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* معلومات الرواية */}
-            <div className={`p-4 rounded-xl shadow-sm ${isDark ? 'bg-gray-900' : 'bg-white'}`}>
-              <h3 className="font-semibold text-sm mb-3">Novel Info</h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between"><span className="opacity-60">Status</span><span className="capitalize font-medium">{novel.status}</span></div>
-                <div className="flex justify-between"><span className="opacity-60">Chapters</span><span className="font-medium">{totalChapters}</span></div>
-                <div className="flex justify-between"><span className="opacity-60">Words</span><span className="font-medium">{formatNumber(novel.word_count || 0)}</span></div>
-                <div className="flex justify-between"><span className="opacity-60">Updated</span><span className="font-medium">{formatDate(novel.updated_at)}</span></div>
-                <div className="flex justify-between"><span className="opacity-60">Published</span><span className="font-medium">{formatDate(novel.created_at)}</span></div>
-              </div>
-            </div>
-          </div>
+        {/* التعليقات */}
+        <div className="mt-6">
+          <h2 className="text-sm font-bold text-[var(--txt3)] uppercase tracking-wider mb-4">Reviews & Comments</h2>
+          <CommentSection chapterId={chapters[0]?.id || ''} />
         </div>
       </div>
     </div>
