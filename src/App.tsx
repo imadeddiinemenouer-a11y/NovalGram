@@ -35,7 +35,7 @@ function App() {
       <AuthProvider>
         <ThemeProvider>
           <HashRouter>
-            <Toaster position="top-center" toastOptions={{ duration: 4000, style: { background: '#363636', color: '#fff' }}} />
+            <Toaster position="top-center" toastOptions={{ duration: 4000, style: { background: '#13131f', color: '#f9fafb', border: '1px solid rgba(255,255,255,0.07)' }}} />
             <Routes>
               <Route path="/login" element={<LoginPage />} />
               <Route path="/" element={<Layout />}>
