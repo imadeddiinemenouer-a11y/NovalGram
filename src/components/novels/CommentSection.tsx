@@ -63,7 +63,6 @@ export default function CommentSection({ chapterId }: CommentSectionProps) {
         Comments ({comments.length})
       </h3>
 
-      {/* Comment Form */}
       {user && (
         <form onSubmit={handleSubmit} className="flex gap-3">
           <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[var(--v)] to-[var(--mg)] flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
@@ -88,7 +87,6 @@ export default function CommentSection({ chapterId }: CommentSectionProps) {
         </form>
       )}
 
-      {/* Comments List */}
       {isLoading ? (
         <LoadingSpinner />
       ) : comments.length === 0 ? (
@@ -101,7 +99,7 @@ export default function CommentSection({ chapterId }: CommentSectionProps) {
           {comments.map((comment) => (
             <div key={comment.id} className="flex gap-3">
               <div className="w-8 h-8 rounded-full bg-[var(--surface2)] flex items-center justify-center text-sm flex-shrink-0">
-                {(comment.user as any)?.emoji || '🦋'}
+                🦋
               </div>
               <div className="flex-1 bg-[var(--surface2)] rounded-2xl rounded-tl-none px-3 py-2">
                 <div className="text-xs font-bold text-[var(--vb)] mb-1">
