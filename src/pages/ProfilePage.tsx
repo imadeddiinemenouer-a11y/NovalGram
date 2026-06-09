@@ -48,11 +48,10 @@ export default function ProfilePage() {
     }
   }
 
-  const avatarLetter = user.display_name?.[0] || user.username?.[0] || 'U';
+  const avatarLetter = (user.display_name || user.username || 'U')[0];
 
   return (
     <div className={`min-h-screen transition-colors ${isDark ? 'bg-gray-950 text-white' : 'bg-gray-50 text-gray-900'}`}>
-      {/* Header with gradient background */}
       <div className={`relative overflow-hidden ${isDark ? 'bg-gray-900' : 'bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 text-white'}`}>
         <div className="absolute inset-0 bg-black/20 dark:bg-black/40" />
         <div className="max-w-4xl mx-auto px-4 py-10 relative z-10">
@@ -104,7 +103,6 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* Stats */}
       <div className="max-w-4xl mx-auto px-4 -mt-6 relative z-10">
         <div className={`grid grid-cols-3 gap-4 p-4 rounded-2xl shadow-lg ${isDark ? 'bg-gray-900' : 'bg-white'}`}>
           <div className="text-center">
@@ -125,7 +123,6 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* Bio & Edit */}
       <div className="max-w-4xl mx-auto px-4 py-6">
         <div className={`p-6 rounded-2xl shadow-sm ${isDark ? 'bg-gray-900' : 'bg-white'}`}>
           {isEditing ? (
@@ -190,7 +187,6 @@ export default function ProfilePage() {
           )}
         </div>
 
-        {/* Settings */}
         <div className={`mt-6 rounded-2xl shadow-sm overflow-hidden ${isDark ? 'bg-gray-900' : 'bg-white'}`}>
           <div className={`p-4 border-b ${isDark ? 'border-gray-800' : 'border-gray-100'}`}>
             <h2 className="font-semibold">Settings</h2>
