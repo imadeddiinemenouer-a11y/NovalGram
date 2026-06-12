@@ -61,7 +61,6 @@ body {
   color: #5a5a6c !important;
 }
 
-/* تحسين تباين النصوص الفاتحة على الخلفية الداكنة */
 .text-gray-300, .text-gray-200, .text-gray-100 {
   color: #c0c0d0 !important;
 }
@@ -69,7 +68,6 @@ body {
   color: #3a3a4c !important;
 }
 
-/* تحسين رؤية الأزرار عند التركيز بلوحة المفاتيح */
 button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
   outline: 2px solid var(--warm);
   outline-offset: 2px;
