@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useTheme } from '../../context/ThemeContext';
 
 const icons: Record<string, string[]> = {
   home: ['M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z', 'M9 22V12h6v10'],
@@ -11,82 +12,76 @@ const icons: Record<string, string[]> = {
 export default function BottomNav() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
 
   const isActive = (path: string) => location.pathname === path || (path !== '/' && location.pathname.startsWith(path));
+
+  const activeColor = isDark ? '#f0eff8' : '#0f0f14';
+  const mutedColor = isDark ? 'var(--muted)' : 'var(--muted)';
+  const pillBg = isDark ? '#f0eff8' : '#0f0f14';
+  const pillIcon = isDark ? '#0f0f14' : '#f0eff8';
 
   return (
     <nav
       className="flex items-end bg-[var(--ink)] border-t border-[var(--border)] flex-shrink-0 z-50 relative"
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
     >
-      {/* Home */}
-      <button
-        onClick={() => navigate('/')}
-        className={`flex-1 flex flex-col items-center gap-1 py-2.5 border-none bg-transparent cursor-pointer transition-colors ${
-          isActive('/') ? 'text-[#f0eff8]' : 'text-[var(--muted)]'
-        }`}
-      >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20">
-          {icons.home.map((d, i) => (<path key={i} d={d} />))}
-        </svg>
-        <span className="text-[10px] font-semibold uppercase tracking-wider">Home</span>
-      </button>
+      {[
+        { path: '/', label: 'Home', icon: 'home' },
+        { path: '/search', label: 'Discover', icon: 'discover' },
+      ].map((item) => (
+        <button
+          key={item.path}
+          onClick={() => navigate(item.path)}
+          className="flex-1 flex flex-col items-center gap-1 py-2.5 border-none bg-transparent cursor-pointer transition-colors"
+          style={{ color: isActive(item.path) ? activeColor : mutedColor }}
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20">
+            {icons[item.icon].map((d, i) => (<path key={i} d={d} />))}
+          </svg>
+          <span className="text-[10px] font-semibold uppercase tracking-wider">{item.label}</span>
+        </button>
+      ))}
 
-      {/* Discover */}
-      <button
-        onClick={() => navigate('/search')}
-        className={`flex-1 flex flex-col items-center gap-1 py-2.5 border-none bg-transparent cursor-pointer transition-colors ${
-          isActive('/search') ? 'text-[#f0eff8]' : 'text-[var(--muted)]'
-        }`}
-      >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20">
-          {icons.discover.map((d, i) => (<path key={i} d={d} />))}
-        </svg>
-        <span className="text-[10px] font-semibold uppercase tracking-wider">Discover</span>
-      </button>
-
-      {/* Write (مركزي بارز) */}
+      {/* Write Pill */}
       <button
         onClick={() => navigate('/studio')}
         className="flex-1 flex flex-col items-center justify-end border-none bg-transparent cursor-pointer relative"
         style={{ height: '56px' }}
       >
         <div
-          className="w-[46px] h-[46px] rounded-full bg-[#f0eff8] flex items-center justify-center absolute"
-          style={{ top: '-16px', left: '50%', transform: 'translateX(-50%)' }}
+          className="w-[46px] h-[46px] rounded-full flex items-center justify-center absolute"
+          style={{
+            top: '-16px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            background: pillBg,
+          }}
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f0f14" strokeWidth="2.5">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={pillIcon} strokeWidth="2.5">
             <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
           </svg>
         </div>
-        <span className="text-[10px] font-semibold text-[var(--muted)] uppercase tracking-wider mt-auto pb-1">Write</span>
+        <span className="text-[10px] font-semibold uppercase tracking-wider mt-auto pb-1" style={{ color: mutedColor }}>Write</span>
       </button>
 
-      {/* Library */}
-      <button
-        onClick={() => navigate('/library')}
-        className={`flex-1 flex flex-col items-center gap-1 py-2.5 border-none bg-transparent cursor-pointer transition-colors ${
-          isActive('/library') ? 'text-[#f0eff8]' : 'text-[var(--muted)]'
-        }`}
-      >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20">
-          {icons.library.map((d, i) => (<path key={i} d={d} />))}
-        </svg>
-        <span className="text-[10px] font-semibold uppercase tracking-wider">Library</span>
-      </button>
-
-      {/* Profile */}
-      <button
-        onClick={() => navigate('/profile')}
-        className={`flex-1 flex flex-col items-center gap-1 py-2.5 border-none bg-transparent cursor-pointer transition-colors ${
-          isActive('/profile') ? 'text-[#f0eff8]' : 'text-[var(--muted)]'
-        }`}
-      >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20">
-          {icons.profile.map((d, i) => (<path key={i} d={d} />))}
-        </svg>
-        <span className="text-[10px] font-semibold uppercase tracking-wider">Me</span>
-      </button>
+      {[
+        { path: '/library', label: 'Library', icon: 'library' },
+        { path: '/profile', label: 'Me', icon: 'profile' },
+      ].map((item) => (
+        <button
+          key={item.path}
+          onClick={() => navigate(item.path)}
+          className="flex-1 flex flex-col items-center gap-1 py-2.5 border-none bg-transparent cursor-pointer transition-colors"
+          style={{ color: isActive(item.path) ? activeColor : mutedColor }}
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20">
+            {icons[item.icon].map((d, i) => (<path key={i} d={d} />))}
+          </svg>
+          <span className="text-[10px] font-semibold uppercase tracking-wider">{item.label}</span>
+        </button>
+      ))}
     </nav>
   );
 }
