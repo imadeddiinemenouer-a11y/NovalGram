@@ -6,69 +6,31 @@
   --ink: #0f0f14;
   --ink2: #1a1a26;
   --ink3: #242436;
-  --paper: #f5f4f0;
-  --paper2: #eeece7;
-  --paper3: #e4e1d8;
-  --accent: #2d2d5e;
-  --accent2: #3d3d7a;
   --warm: #c4561a;
   --warm2: #d4662a;
   --muted: #7a7a8c;
   --muted2: #9a9aaa;
   --border: rgba(255, 255, 255, 0.06);
-  --border-light: rgba(0, 0, 0, 0.08);
   --serif: 'Playfair Display', Georgia, serif;
   --sans: 'DM Sans', system-ui, sans-serif;
-  --r: 12px;
-  --rs: 7px;
-  --rl: 18px;
-  --rx: 24px;
-  --tr: 0.2s ease;
 }
 
 .light {
   --ink: #f5f4f0;
   --ink2: #ffffff;
   --ink3: #eeece7;
-  --paper: #0f0f14;
-  --paper2: #1a1a26;
-  --border: rgba(0, 0, 0, 0.08);
-  --border-light: rgba(0, 0, 0, 0.06);
   --muted: #5a5a6c;
   --muted2: #6a6a7c;
+  --border: rgba(0, 0, 0, 0.08);
 }
 
 body {
-  background: var(--ink);
-  color: #f0eff8;
-  font-family: var(--sans);
+  background: var(--ink) !important;
+  color: #f0eff8 !important;
+  font-family: var(--sans) !important;
   -webkit-tap-highlight-color: transparent;
   -webkit-font-smoothing: antialiased;
-  transition: background 0.3s, color 0.3s;
 }
 
 ::-webkit-scrollbar { width: 2px; }
 ::-webkit-scrollbar-thumb { background: var(--ink3); border-radius: 99px; }
-
-.animate-fade-in { animation: fadeIn 0.28s ease both; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-
-/* تحسين تباين النصوص */
-.text-muted, .text-gray-400, .text-gray-500, .text-gray-600 {
-  color: #9a9aaa !important;
-}
-.light .text-muted, .light .text-gray-400, .light .text-gray-500, .light .text-gray-600 {
-  color: #5a5a6c !important;
-}
-
-.text-gray-300, .text-gray-200, .text-gray-100 {
-  color: #c0c0d0 !important;
-}
-.light .text-gray-300, .light .text-gray-200, .light .text-gray-100 {
-  color: #3a3a4c !important;
-}
-
-button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
-  outline: 2px solid var(--warm);
-  outline-offset: 2px;
-}
