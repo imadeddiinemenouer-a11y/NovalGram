@@ -127,6 +127,7 @@ export default function DiscoverPage() {
             <button
               key={i}
               onClick={() => setHeroIdx(i)}
+              aria-label={`Featured story ${i + 1}`}
               className={`w-1.5 h-1.5 rounded-full transition-all ${
                 i === heroIdx % FEATURED.length ? 'w-5 bg-[var(--vb)]' : 'bg-[var(--surface3)]'
               }`}
