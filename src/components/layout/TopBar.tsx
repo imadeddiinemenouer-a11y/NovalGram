@@ -55,3 +55,8 @@ export default function TopBar({ onMenuToggle }: TopBarProps) {
               </button>
             </div>
           </>
+        )}
+      </div>
+    </header>
+  );
+}
