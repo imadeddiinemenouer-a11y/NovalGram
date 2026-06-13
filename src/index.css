@@ -2,11 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ══════════════════════════════════════
-   NOVELGRAM — نظام ألوان موحد
-   داكن: أسود دافئ مع أبيض
-   فاتح: أبيض دافئ مع أسود
-══════════════════════════════════════ */
+/* ===== نظام الألوان الموحد ===== */
 :root {
   --bg: #0f0f14;
   --bg2: #1a1a26;
@@ -17,6 +13,8 @@
   --accent: #c4561a;
   --accent2: #d4662a;
   --border: rgba(255, 255, 255, 0.06);
+  --serif: 'Playfair Display', Georgia, serif;
+  --sans: 'DM Sans', system-ui, sans-serif;
 }
 
 .light {
@@ -32,12 +30,12 @@
 }
 
 body {
-  background: var(--bg) !important;
-  color: var(--text) !important;
-  font-family: 'DM Sans', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
   -webkit-tap-highlight-color: transparent;
   -webkit-font-smoothing: antialiased;
-  transition: background 0.3s, color 0.3s;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 ::-webkit-scrollbar { width: 2px; }
