@@ -17,16 +17,13 @@ export default function BottomNav() {
 
   const isActive = (path: string) => location.pathname === path || (path !== '/' && location.pathname.startsWith(path));
 
-  const activeColor = isDark ? '#f0eff8' : '#0f0f14';
-  const mutedColor = isDark ? 'var(--muted)' : 'var(--muted)';
+  const activeColor = 'var(--text)';
+  const mutedColor = 'var(--text3)';
   const pillBg = isDark ? '#f0eff8' : '#0f0f14';
   const pillIcon = isDark ? '#0f0f14' : '#f0eff8';
 
   return (
-    <nav
-      className="flex items-end bg-[var(--ink)] border-t border-[var(--border)] flex-shrink-0 z-50 relative"
-      style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
-    >
+    <nav className="flex items-end bg-[var(--bg)] border-t border-[var(--border)] flex-shrink-0 z-50 relative" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
       {[
         { path: '/', label: 'Home', icon: 'home' },
         { path: '/search', label: 'Discover', icon: 'discover' },
@@ -44,20 +41,14 @@ export default function BottomNav() {
         </button>
       ))}
 
-      {/* Write Pill */}
       <button
         onClick={() => navigate('/studio')}
         className="flex-1 flex flex-col items-center justify-end border-none bg-transparent cursor-pointer relative"
         style={{ height: '56px' }}
       >
         <div
-          className="w-[46px] h-[46px] rounded-full flex items-center justify-center absolute"
-          style={{
-            top: '-16px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            background: pillBg,
-          }}
+          className="w-[46px] h-[46px] rounded-full flex items-center justify-center absolute shadow-lg"
+          style={{ top: '-16px', left: '50%', transform: 'translateX(-50%)', background: pillBg }}
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={pillIcon} strokeWidth="2.5">
             <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
